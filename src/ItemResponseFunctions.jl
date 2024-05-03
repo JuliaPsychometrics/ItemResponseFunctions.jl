@@ -2,7 +2,8 @@ module ItemResponseFunctions
 
 using Reexport
 
-@reexport using AbstractItemResponseModels
+@reexport import AbstractItemResponseModels:
+    ItemResponseModel, irf, iif, expected_score, information
 
 using LogExpFunctions: logistic
 
