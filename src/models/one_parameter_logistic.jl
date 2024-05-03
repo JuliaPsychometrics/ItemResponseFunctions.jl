@@ -1,25 +1,31 @@
 abstract type OneParameterLogisticModel{T<:EstimationType} <: ItemResponseModel end
 
-const OnePL = Type{OneParameterLogisticModel}
+const OnePL = OneParameterLogisticModel
 
-response_type(::OnePL) = Dichotomous
-person_dimensionality(::OnePL) = Univariate
-item_dimensionality(::OnePL) = Univariate
-
+response_type(::Type{OnePL}) = Dichotomous
+person_dimensionality(::Type{OnePL}) = Univariate
+item_dimensionality(::Type{OnePL}) = Univariate
 
 # item response function
-function irf(::OnePL, theta::Real, beta::Real, y)
+function irf(::Type{OnePL}, theta::Real, beta::Real, y)
     prob = logistic(theta - beta)
     return ifelse(y == 1, prob, 1 - prob)
 end
 
-function irf(T::OnePL, theta::U, beta::AbstractVector{U}, y) where {U<:Real}
+function irf(T::Type{OnePL}, theta::U, beta::AbstractVector{U}, y) where {U<:Real}
     probs = zeros(U, length(beta))
     irf!(T, probs, theta, beta, y; scoring_function = one)
     return probs
 end
 
-function irf!(T::OnePL, probs, theta, beta, y; scoring_function::F = identity) where {F}
+function irf!(
+    T::Type{OnePL},
+    probs,
+    theta,
+    beta,
+    y;
+    scoring_function::F = identity,
+) where {F}
     for i in eachindex(beta)
         probs[i] += irf(T, theta, beta[i], y) * scoring_function(y)
     end
@@ -28,7 +34,7 @@ end
 
 # item information function
 function iif(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     beta::U,
     y;
@@ -46,7 +52,7 @@ function iif(
 end
 
 function iif(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     beta::AbstractVector{U},
     y;
@@ -58,7 +64,7 @@ function iif(
 end
 
 function iif!(
-    T::OnePL,
+    T::Type{OnePL},
     info,
     theta::U,
     beta::AbstractVector{U},
@@ -73,7 +79,7 @@ end
 
 # expected score
 function expected_score(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     betas;
     scoring_function::F = identity,
@@ -90,7 +96,7 @@ function expected_score(
 end
 
 function expected_score(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     betas::AbstractVector{<:AbstractVector{U}};
     scoring_function::F = identity,
@@ -108,7 +114,7 @@ end
 
 # information
 function information(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     betas::AbstractVector{U};
     scoring_function::F = identity,
@@ -121,7 +127,7 @@ function information(
 end
 
 function information(
-    T::OnePL,
+    T::Type{OnePL},
     theta::U,
     betas::AbstractVector{<:AbstractVector{U}};
     scoring_function::F = identity,
