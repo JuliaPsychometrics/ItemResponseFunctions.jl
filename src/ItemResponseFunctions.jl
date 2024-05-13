@@ -10,9 +10,10 @@ import AbstractItemResponseModels: response_type, Dichotomous
 
 using LogExpFunctions: logistic
 
-export OneParameterLogisticModel
-export ThreeParameterLogisticModel
-export FourParameterLogisticModel
+export OneParameterLogisticModel, OnePL
+export TwoParameterLogisticModel, TwoPL
+export ThreeParameterLogisticModel, ThreePL
+export FourParameterLogisticModel, FourPL
 
 abstract type DichotomousItemResponseModel <: ItemResponseModel end
 
@@ -29,14 +30,13 @@ include("models/dichotomous/1PL.jl")
 function expected_score(
     M::Type{<:DichotomousItemResponseModel},
     theta::T,
-    betas::AbstractVector,
-) where {T<:Real}
+    betas::AbstractVector;
+    scoring_function::F = identity,
+) where {T<:Real,F}
     score = zero(T)
 
-    for beta in betas
-        for y in 0:1
-            score += irf(M, theta, beta, y)
-        end
+    for beta in betas, y in 0:1
+        score += irf(M, theta, beta, y) * scoring_function(y)
     end
 
     return score
@@ -50,9 +50,7 @@ function information(
     info = zero(T)
 
     for beta in betas
-        for y in 0:1
-            info += iif(M, theta, beta, y)
-        end
+        info += iif(M, theta, beta, 1)
     end
 
     return info

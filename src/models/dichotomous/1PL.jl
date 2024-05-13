@@ -29,6 +29,9 @@ function irf(::Type{OnePL}, theta::Real, beta::Real, y)
     return ifelse(y == 1, prob, 1 - prob)
 end
 
+function irf(::Type{OnePL}, theta, beta, y)
+    return irf(FourPL, theta, merge(beta, (a = 1.0, c = 0.0, d = 1.0)), y)
+end
 """
     iif(::Type{OneParameterLogisticModel}, theta, beta, y = 1)
 
@@ -51,150 +54,11 @@ julia> iif(OneParameterLogisticModel, 0.0, Inf, 1)
 ```
 
 """
-function iif(
-    T::Type{OnePL},
-    theta::U,
-    beta::U,
-    y;
-    scoring_function::F = identity,
-) where {F,U<:Real}
-    expected = irf(T, theta, beta, 1) * scoring_function(1)
-    info = zero(U)
-
-    for y in 0:1
-        prob = irf(T, theta, beta, y)
-        info += (scoring_function(y) - expected)^2 * prob
-    end
-
-    return info
+function iif(M::Type{OnePL}, theta::Real, beta::Real, y)
+    prob = irf(M, theta, beta, y)
+    return prob * (1 - prob)
 end
 
-"""
-    expected_score(::Type{OneParameterLogisticModel}, theta, betas; scoring_function)
-
-Calculate the expected score of a one parameter logistic model for multiple items given
-an ability value `theta` and an array of item difficulties `betas`.
-
-`scoring_function` can be used to add weights to the resulting expected scores (see Examples
-for details).
-
-## Examples
-```jldoctest
-julia> expected_score(OneParameterLogisticModel, 0.0, zeros(3))
-1.5
-
-julia> expected_score(OneParameterLogisticModel, 0.0, fill(-Inf, 3))
-3.0
-```
-
-### Using the scoring function
-Using the `scoring_function` keyword argument allows to weigh response probabilities by
-a value depending on the response `y`. It is of the form `f(y) = x`, assigning a scalar
-value to every possible reponse value `y`.
-
-For the one parameter logistic model the valid responses are 0 and 1. If we want to
-calculate expected scores doubling the weight for `y = 1`, the weighted responses are 0 and
-2. The corresponding `scoring_function` is `y -> 2y`,
-
-```jldoctest
-julia> expected_score(OneParameterLogisticModel, 0.0, zeros(3), scoring_function = y -> 2y)
-3.0
-
-```
-"""
-# function expected_score(
-#     T::Type{OnePL},
-#     theta::U,
-#     betas;
-#     scoring_function::F = identity,
-# ) where {U,F}
-#     score = zero(U)
-
-#     for beta in betas
-#         for y in 0:1
-#             score += irf(T, theta, beta, y) * scoring_function(y)
-#         end
-#     end
-
-#     return score
-# end
-
-# function expected_score(
-#     T::Type{OnePL},
-#     theta::U,
-#     betas::AbstractVector{<:AbstractVector{U}};
-#     scoring_function::F = identity,
-# ) where {U,F}
-#     score = zeros(U, length(first(betas)))
-
-#     for beta in betas
-#         for y in 0:1
-#             irf!(T, score, theta, beta, y; scoring_function)
-#         end
-#     end
-
-#     return score
-# end
-
-"""
-    information(::Type{OneParameterLogisticModel}, theta, betas; scoring_function)
-
-Calculate the information of a one parameter logistic model for multiple items given
-an ability value `theta` and an array of item difficulties `betas`.
-
-`scoring_function` can be used to add weights to the resulting expected scores (see Examples
-for details).
-
-## Examples
-```jldoctest
-julia> information(OneParameterLogisticModel, 0.0, zeros(3))
-0.75
-
-julia> information(OneParameterLogisticModel, 0.0, fill(Inf, 3))
-0.0
-```
-
-### Using the scoring function
-Using the `scoring_function` keyword argument allows to weigh response probabilities by
-a value depending on the response `y`. It is of the form `f(y) = x`, assigning a scalar
-value to every possible reponse value `y`.
-
-For the one parameter logistic model the valid responses are 0 and 1. If we want to
-calculate information doubling the weight for `y = 1`, the weighted responses are 0 and
-2. The corresponding `scoring_function` is `y -> 2y`,
-
-```jldoctest
-julia> information(OneParameterLogisticModel, 0.0, zeros(3), scoring_function = y -> 2y)
-3.0
-
-```
-"""
-# function information(
-#     T::Type{OnePL},
-#     theta::U,
-#     betas::AbstractVector{U};
-#     scoring_function::F = identity,
-# ) where {U,F}
-#     info = zero(U)
-#     for beta in betas
-#         info += iif(T, theta, beta, 1; scoring_function)
-#     end
-#     return info
-# end
-
-# function information(
-#     T::Type{OnePL},
-#     theta::U,
-#     betas::AbstractVector{<:AbstractVector{U}};
-#     scoring_function::F = identity,
-# ) where {U,F}
-#     info = zeros(U, length(first(betas)))
-
-#     for beta in betas
-#         for y in 0:1
-#             iif!(T, info, theta, beta, y; scoring_function)
-#         end
-#     end
-
-#     return info
-# end
+function iif(M::Type{OnePL}, theta, beta, y)
+    return iif(FourPL, theta, merge(beta, (a = 1.0, c = 0.0, d = 1.0)), y)
+end

@@ -17,17 +17,22 @@ at the ability value `theta` given model parameters `beta`.
 """
 function irf(::Type{FourPL}, theta::Real, beta::NamedTuple, y = 1)
     @unpack a, b, c, d = beta
-    prob = c + (d - c) * logistic(a * theta - b)
+    prob = c + (d - c) * logistic(a * (theta - b))
     return ifelse(y == 1, prob, 1 - prob)
 end
-
 
 """
     iif
 """
-function iif(M::Type{FourPL}, theta, beta, y = 1)
+function iif(M::Type{FourPL}, theta, beta::NamedTuple, y = 1)
     @unpack a, b, c, d = beta
     prob = irf(M, theta, beta, y)
-    info = (a^2 * (prob - c)^2 * (d - prob)^2) / ((d - c)^2 * prob * (1 - prob))
+
+    num = a^2 * (prob - c)^2 * (d - prob)^2
+    num == 0 && return num
+
+    denum = (d - c)^2 * prob * (1 - prob)
+    info = num / denum
+
     return info
 end
