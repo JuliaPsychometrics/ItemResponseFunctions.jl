@@ -1,4 +1,4 @@
-abstract type OneParameterLogisticModel <: ItemResponseModel end
+abstract type OneParameterLogisticModel <: DichotomousItemResponseModel end
 
 const OnePL = OneParameterLogisticModel
 
@@ -24,29 +24,9 @@ julia> irf(OneParameterLogisticModel, 0.0, Inf, 1)
 
 ```
 """
-function irf(::Type{OnePL}, theta::Real, beta::Real, y = 1)
+function irf(::Type{OnePL}, theta::Real, beta::Real, y)
     prob = logistic(theta - beta)
     return ifelse(y == 1, prob, 1 - prob)
-end
-
-function irf(T::Type{OnePL}, theta::U, beta::AbstractVector{U}, y = 1) where {U<:Real}
-    probs = zeros(U, length(beta))
-    irf!(T, probs, theta, beta, y; scoring_function = one)
-    return probs
-end
-
-function irf!(
-    T::Type{OnePL},
-    probs,
-    theta,
-    beta,
-    y = 1;
-    scoring_function::F = identity,
-) where {F}
-    for i in eachindex(beta)
-        probs[i] += irf(T, theta, beta[i], y) * scoring_function(y)
-    end
-    return nothing
 end
 
 """
@@ -89,32 +69,6 @@ function iif(
     return info
 end
 
-function iif(
-    T::Type{OnePL},
-    theta::U,
-    beta::AbstractVector{U},
-    y;
-    scoring_function::F = identity,
-) where {F,U<:Real}
-    info = zeros(U, length(beta))
-    iif!(T, info, theta, beta, y; scoring_function)
-    return info
-end
-
-function iif!(
-    T::Type{OnePL},
-    info,
-    theta::U,
-    beta::AbstractVector{U},
-    y;
-    scoring_function::F = identity,
-) where {F,U<:Real}
-    for i in eachindex(beta)
-        info[i] += iif(T, theta, beta[i], y; scoring_function)
-    end
-    return nothing
-end
-
 """
     expected_score(::Type{OneParameterLogisticModel}, theta, betas; scoring_function)
 
@@ -148,39 +102,39 @@ julia> expected_score(OneParameterLogisticModel, 0.0, zeros(3), scoring_function
 
 ```
 """
-function expected_score(
-    T::Type{OnePL},
-    theta::U,
-    betas;
-    scoring_function::F = identity,
-) where {U,F}
-    score = zero(U)
+# function expected_score(
+#     T::Type{OnePL},
+#     theta::U,
+#     betas;
+#     scoring_function::F = identity,
+# ) where {U,F}
+#     score = zero(U)
 
-    for beta in betas
-        for y in 0:1
-            score += irf(T, theta, beta, y) * scoring_function(y)
-        end
-    end
+#     for beta in betas
+#         for y in 0:1
+#             score += irf(T, theta, beta, y) * scoring_function(y)
+#         end
+#     end
 
-    return score
-end
+#     return score
+# end
 
-function expected_score(
-    T::Type{OnePL},
-    theta::U,
-    betas::AbstractVector{<:AbstractVector{U}};
-    scoring_function::F = identity,
-) where {U,F}
-    score = zeros(U, length(first(betas)))
+# function expected_score(
+#     T::Type{OnePL},
+#     theta::U,
+#     betas::AbstractVector{<:AbstractVector{U}};
+#     scoring_function::F = identity,
+# ) where {U,F}
+#     score = zeros(U, length(first(betas)))
 
-    for beta in betas
-        for y in 0:1
-            irf!(T, score, theta, beta, y; scoring_function)
-        end
-    end
+#     for beta in betas
+#         for y in 0:1
+#             irf!(T, score, theta, beta, y; scoring_function)
+#         end
+#     end
 
-    return score
-end
+#     return score
+# end
 
 """
     information(::Type{OneParameterLogisticModel}, theta, betas; scoring_function)
@@ -215,32 +169,32 @@ julia> information(OneParameterLogisticModel, 0.0, zeros(3), scoring_function = 
 
 ```
 """
-function information(
-    T::Type{OnePL},
-    theta::U,
-    betas::AbstractVector{U};
-    scoring_function::F = identity,
-) where {U,F}
-    info = zero(U)
-    for beta in betas
-        info += iif(T, theta, beta, 1; scoring_function)
-    end
-    return info
-end
+# function information(
+#     T::Type{OnePL},
+#     theta::U,
+#     betas::AbstractVector{U};
+#     scoring_function::F = identity,
+# ) where {U,F}
+#     info = zero(U)
+#     for beta in betas
+#         info += iif(T, theta, beta, 1; scoring_function)
+#     end
+#     return info
+# end
 
-function information(
-    T::Type{OnePL},
-    theta::U,
-    betas::AbstractVector{<:AbstractVector{U}};
-    scoring_function::F = identity,
-) where {U,F}
-    info = zeros(U, length(first(betas)))
+# function information(
+#     T::Type{OnePL},
+#     theta::U,
+#     betas::AbstractVector{<:AbstractVector{U}};
+#     scoring_function::F = identity,
+# ) where {U,F}
+#     info = zeros(U, length(first(betas)))
 
-    for beta in betas
-        for y in 0:1
-            iif!(T, info, theta, beta, y; scoring_function)
-        end
-    end
+#     for beta in betas
+#         for y in 0:1
+#             iif!(T, info, theta, beta, y; scoring_function)
+#         end
+#     end
 
-    return info
-end
+#     return info
+# end
