@@ -28,7 +28,7 @@ julia> irf(TwoPL, 0.0, beta)
 
 ### 3 Parameter Logistic Model
 ```jldoctest
-julia> beta = (; a = 1.5, b = 0.5, c = 0.2)
+julia> beta = (; a = 1.5, b = 0.5, c = 0.2);
 
 julia> irf(ThreePL, 0.0, beta)
 0.4566570406596856
@@ -36,7 +36,7 @@ julia> irf(ThreePL, 0.0, beta)
 
 ### 4 Parameter Logistic Model
 ```jldoctest
-julia> beta = (; a = 1.5, b = 0.5, c = 0.2, d = 0.8)
+julia> beta = (; a = 1.5, b = 0.5, c = 0.2, d = 0.8);
 
 julia> irf(FourPL, 0.0, beta)
 0.3924927804947642

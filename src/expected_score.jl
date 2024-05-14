@@ -22,7 +22,7 @@ julia> betas = fill(0.0, 10);
 julia> expected_score(OnePL, 0.0, betas)
 5.0
 
-julia> expected_score(OnePl, 0.0, betas; scoring_function = x -> 2x)
+julia> expected_score(OnePL, 0.0, betas; scoring_function = x -> 2x)
 10.0
 ```
 
