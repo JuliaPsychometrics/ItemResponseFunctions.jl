@@ -11,7 +11,12 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 SimpleUnPack = "ce78b400-467f-4804-87d8-8f486da07d0a"
 
 [compat]
+julia = "1.8"
 AbstractItemResponseModels = "0.2"
+DocStringExtensions = "0.9"
+LogExpFunctions = "0.3"
+Reexport = "1"
+SimpleUnPack = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
