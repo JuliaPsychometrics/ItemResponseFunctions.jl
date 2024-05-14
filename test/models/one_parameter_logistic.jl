@@ -31,6 +31,7 @@
         betas = fill((; b = 0.0), 3)
         @test expected_score(T, 0.0, betas) == 1.5
         @test expected_score(T, Inf, betas) == 3.0
+        @test expected_score(T, 0.0, betas; scoring_function = x -> 2x) == 3.0
     end
 
     @testset "information" begin
