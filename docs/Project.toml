@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+ItemResponseFunctions = "18e85bec-f2a0-4122-b3a6-37651333b522"
+
+[compat]
+Documenter = "1"
