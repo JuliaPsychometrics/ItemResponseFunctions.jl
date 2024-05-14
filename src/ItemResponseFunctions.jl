@@ -11,10 +11,15 @@ import AbstractItemResponseModels: response_type, Dichotomous
 using LogExpFunctions: logistic
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
 
-export OneParameterLogisticModel, OnePL
-export TwoParameterLogisticModel, TwoPL
-export ThreeParameterLogisticModel, ThreePL
-export FourParameterLogisticModel, FourPL
+export DichotomousItemResponseModel,
+    FourPL,
+    FourParameterLogisticModel,
+    OnePL,
+    OneParameterLogisticModel,
+    ThreePL,
+    ThreeParameterLogisticModel,
+    TwoPL,
+    TwoParameterLogisticModel
 
 include("model_types.jl")
 include("irf.jl")
