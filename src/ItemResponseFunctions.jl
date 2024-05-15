@@ -8,7 +8,7 @@ using SimpleUnPack
 
 import AbstractItemResponseModels: response_type, Dichotomous
 
-using LogExpFunctions: logistic
+using LogExpFunctions: logistic, cumsum!, softmax!
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
 
 export DichotomousItemResponseModel,
@@ -19,7 +19,13 @@ export DichotomousItemResponseModel,
     ThreePL,
     ThreeParameterLogisticModel,
     TwoPL,
-    TwoParameterLogisticModel
+    TwoParameterLogisticModel,
+    GPCM,
+    GeneralizedPartialCreditModel,
+    PCM,
+    PartialCreditModel,
+    RSM,
+    RatingScaleModel
 
 include("model_types.jl")
 include("irf.jl")

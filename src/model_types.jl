@@ -81,3 +81,64 @@ The item parameters `beta` must be a destructurable object with the following fi
 """
 abstract type FourParameterLogisticModel <: DichotomousItemResponseModel end
 const FourPL = FourParameterLogisticModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Generalized Partial Credit Model with an item category
+response function given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (a_j (\\theta_i - b_j + t_{js}))}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (a_j (\\theta_i - b_j + t_{js}))}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `a`: the item discrimination
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `GPCM`
+"""
+abstract type GeneralizedPartialCreditModel <: ItemResponseModel end
+const GPCM = GeneralizedPartialCreditModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Partial Credit Model with an item category response function
+given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (\\theta_i - b_j + t_{js})}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (\\theta_i - b_j + t_{js})}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `PCM`
+"""
+abstract type PartialCreditModel <: ItemResponseModel end
+const PCM = PartialCreditModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Rating Scale Model with an item category response function
+given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (\\theta_i - b_j + t_{s})}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (\\theta_i - b_j + t_{s})}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `RSM`
+"""
+abstract type RatingScaleModel <: ItemResponseModel end
+const RSM = RatingScaleModel
