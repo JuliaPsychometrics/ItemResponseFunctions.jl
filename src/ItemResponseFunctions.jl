@@ -25,7 +25,9 @@ export DichotomousItemResponseModel,
     PCM,
     PartialCreditModel,
     RSM,
-    RatingScaleModel
+    RatingScaleModel,
+    GRSM,
+    GeneralizedRatingScaleModel
 
 include("model_types.jl")
 include("irf.jl")
