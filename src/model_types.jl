@@ -10,6 +10,13 @@ response_type(::Type{<:DichotomousItemResponseModel}) = Dichotomous
 """
     $(TYPEDEF)
 
+An abstract type representing an item response model with polytomous responses.
+"""
+abstract type PolytomousItemResponseModel <: ItemResponseModel end
+
+"""
+    $(TYPEDEF)
+
 An abstract representation of a 1 Parameter Logistic Model with an item response function
 given by
 
@@ -100,7 +107,7 @@ The item parameters `beta` must be a destructurable object with the following fi
 
 **Alias:** `GPCM`
 """
-abstract type GeneralizedPartialCreditModel <: ItemResponseModel end
+abstract type GeneralizedPartialCreditModel <: PolytomousItemResponseModel end
 const GPCM = GeneralizedPartialCreditModel
 
 """
@@ -120,7 +127,7 @@ The item parameters `beta` must be a destructurable object with the following fi
 
 **Alias:** `PCM`
 """
-abstract type PartialCreditModel <: ItemResponseModel end
+abstract type PartialCreditModel <: PolytomousItemResponseModel end
 const PCM = PartialCreditModel
 
 """
@@ -140,7 +147,7 @@ The item parameters `beta` must be a destructurable object with the following fi
 
 **Alias:** `RSM`
 """
-abstract type RatingScaleModel <: ItemResponseModel end
+abstract type RatingScaleModel <: PolytomousItemResponseModel end
 const RSM = RatingScaleModel
 
 """
@@ -161,5 +168,5 @@ The item parameters `beta` must be a destructurable object with the following fi
 
 **Alias:** `GRSM`
 """
-abstract type GeneralizedRatingScaleModel <: ItemResponseModel end
+abstract type GeneralizedRatingScaleModel <: PolytomousItemResponseModel end
 const GRSM = GeneralizedRatingScaleModel

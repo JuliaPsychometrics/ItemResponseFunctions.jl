@@ -64,3 +64,50 @@ function iif(M::Type{FourPL}, theta, beta::NamedTuple, y = 1)
 
     return info
 end
+
+"""
+    $(SIGNATURES)
+"""
+function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
+    probs = irf(M, theta, beta)
+    score = expected_score(M, theta, beta)
+
+    info = zero(theta)
+
+    for (category, prob) in enumerate(probs)
+        info += (scoring_function(category) - score)^2 * prob
+    end
+
+    info *= beta.a^2
+
+    return info
+end
+
+function iif(M::Type{GPCM}, theta, beta, y)
+    prob = irf(M, theta, beta, y)
+    return prob * iif(M, theta, beta)
+end
+
+function iif(M::Type{PCM}, theta, beta; scoring_function)
+    return iif(GPCM, theta, merge(beta, (; a = 1.0)); scoring_function)
+end
+
+function iif(M::Type{PCM}, theta, beta, y; scoring_function)
+    return iif(GPCM, theta, merge(beta, (; a = 1.0)), y; scoring_function)
+end
+
+function iif(M::Type{RSM}, theta, beta; scoring_function)
+    return iif(PCM, theta, beta; scoring_function)
+end
+
+function iif(M::Type{RSM}, theta, beta, y; scoring_function)
+    return iif(PCM, theta, beta, y; scoring_function)
+end
+
+function iif(M::Type{GRSM}, theta, beta, y; scoring_function)
+    return iif(GPCM, theta, beta, y; scoring_function)
+end
+
+function iif(M::Type{GRSM}, theta, beta, y; scoring_function)
+    return iif(GPCM, theta, beta, y; scoring_function)
+end

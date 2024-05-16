@@ -27,12 +27,14 @@ export DichotomousItemResponseModel,
     RSM,
     RatingScaleModel,
     GRSM,
-    GeneralizedRatingScaleModel
+    GeneralizedRatingScaleModel,
+    partial_credit
 
 include("model_types.jl")
 include("irf.jl")
 include("iif.jl")
 include("expected_score.jl")
 include("information.jl")
+include("scoring_functions.jl")
 
 end
