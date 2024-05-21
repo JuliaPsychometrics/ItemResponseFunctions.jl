@@ -10,6 +10,13 @@ response_type(::Type{<:DichotomousItemResponseModel}) = Dichotomous
 """
     $(TYPEDEF)
 
+An abstract type representing an item response model with polytomous responses.
+"""
+abstract type PolytomousItemResponseModel <: ItemResponseModel end
+
+"""
+    $(TYPEDEF)
+
 An abstract representation of a 1 Parameter Logistic Model with an item response function
 given by
 
@@ -81,3 +88,85 @@ The item parameters `beta` must be a destructurable object with the following fi
 """
 abstract type FourParameterLogisticModel <: DichotomousItemResponseModel end
 const FourPL = FourParameterLogisticModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Generalized Partial Credit Model with an item category
+response function given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (a_j (\\theta_i - b_j + t_{js}))}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (a_j (\\theta_i - b_j + t_{js}))}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `a`: the item discrimination
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `GPCM`
+"""
+abstract type GeneralizedPartialCreditModel <: PolytomousItemResponseModel end
+const GPCM = GeneralizedPartialCreditModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Partial Credit Model with an item category response function
+given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (\\theta_i - b_j + t_{js})}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (\\theta_i - b_j + t_{js})}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `PCM`
+"""
+abstract type PartialCreditModel <: PolytomousItemResponseModel end
+const PCM = PartialCreditModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Rating Scale Model with an item category response function
+given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (\\theta_i - b_j + t_{s})}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (\\theta_i - b_j + t_{s})}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `RSM`
+"""
+abstract type RatingScaleModel <: PolytomousItemResponseModel end
+const RSM = RatingScaleModel
+
+"""
+    $(TYPEDEF)
+
+An abstract type representing a Generalized Rating ScaleModel with an item category
+response function given by
+
+``P(Y_{ij} = y,| \\theta_i, \\boldsymbol{\\beta}_j) =
+    \\frac{\\exp \\sum_{s=1}^y (a_j (\\theta_i - b_j + t_{s}))}
+    {1 + \\sum_{k=1}^{K_j} \\exp \\sum_{s=1}^k (a_j (\\theta_i - b_j + t_{s}))}``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `a`: the item discrimination
+- `b`: the item difficulty (location)
+- `t`: a vector of threshold parameters
+
+**Alias:** `GRSM`
+"""
+abstract type GeneralizedRatingScaleModel <: PolytomousItemResponseModel end
+const GRSM = GeneralizedRatingScaleModel

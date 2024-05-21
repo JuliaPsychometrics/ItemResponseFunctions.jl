@@ -62,8 +62,52 @@ function expected_score(
 ) where {T<:Real,F}
     score = zero(T)
 
-    for beta in betas, y in 0:1
+    for beta in betas
+        score += expected_score(M, theta, beta; scoring_function)
+    end
+
+    return score
+end
+
+function expected_score(
+    M::Type{<:DichotomousItemResponseModel},
+    theta::T,
+    beta;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    score = zero(T)
+    for y in 0:1
         score += irf(M, theta, beta, y) * scoring_function(y)
+    end
+    return score
+end
+
+function expected_score(
+    M::Type{<:PolytomousItemResponseModel},
+    theta::T,
+    betas::AbstractVector;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    score = zero(T)
+
+    for beta in betas
+        score += expected_score(M, theta, beta; scoring_function)
+    end
+
+    return score
+end
+
+function expected_score(
+    M::Type{<:PolytomousItemResponseModel},
+    theta::T,
+    beta;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    score = zero(T)
+    probs = irf(M, theta, beta)
+
+    for (category, prob) in enumerate(probs)
+        score += prob * scoring_function(category)
     end
 
     return score

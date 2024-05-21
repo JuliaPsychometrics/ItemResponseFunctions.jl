@@ -10,6 +10,10 @@ OneParameterLogisticModel
 TwoParameterLogisticModel
 ThreeParameterLogisticModel
 FourParameterLogisticModel
+PartialCreditModel
+GeneralizedPartialCreditModel
+RatingScaleModel
+GeneralizedRatingScaleModel
 ```
 
 ## Functions

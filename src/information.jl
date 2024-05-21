@@ -57,3 +57,25 @@ function information(
 
     return info
 end
+
+function information(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta;
+    scoring_function::F = identity,
+) where {F}
+    return iif(M, theta, beta; scoring_function)
+end
+
+function information(
+    M::Type{<:PolytomousItemResponseModel},
+    theta::T,
+    betas::AbstractVector;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    info = zero(T)
+    for beta in betas
+        info += information(M, theta, beta; scoring_function)
+    end
+    return info
+end
