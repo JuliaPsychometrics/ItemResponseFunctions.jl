@@ -11,4 +11,6 @@ using ItemResponseFunctions
     include("models/partial_credit_model.jl")
     include("models/rating_scale_model.jl")
     include("models/generalized_rating_scale_model.jl")
+
+    include("scoring_functions.jl")
 end
