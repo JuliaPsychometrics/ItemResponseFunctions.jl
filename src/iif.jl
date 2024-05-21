@@ -83,31 +83,31 @@ function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {
     return info
 end
 
-function iif(M::Type{GPCM}, theta, beta, y)
+function iif(M::Type{GPCM}, theta, beta, y; scoring_function::F = identity) where {F}
     prob = irf(M, theta, beta, y)
-    return prob * iif(M, theta, beta)
+    return prob * iif(M, theta, beta; scoring_function)
 end
 
-function iif(M::Type{PCM}, theta, beta; scoring_function)
+function iif(M::Type{PCM}, theta, beta; scoring_function::F = identity) where {F}
     return iif(GPCM, theta, merge(beta, (; a = 1.0)); scoring_function)
 end
 
-function iif(M::Type{PCM}, theta, beta, y; scoring_function)
+function iif(M::Type{PCM}, theta, beta, y; scoring_function::F = identity) where {F}
     return iif(GPCM, theta, merge(beta, (; a = 1.0)), y; scoring_function)
 end
 
-function iif(M::Type{RSM}, theta, beta; scoring_function)
+function iif(M::Type{RSM}, theta, beta; scoring_function::F = identity) where {F}
     return iif(PCM, theta, beta; scoring_function)
 end
 
-function iif(M::Type{RSM}, theta, beta, y; scoring_function)
+function iif(M::Type{RSM}, theta, beta, y; scoring_function::F = identity) where {F}
     return iif(PCM, theta, beta, y; scoring_function)
 end
 
-function iif(M::Type{GRSM}, theta, beta, y; scoring_function)
-    return iif(GPCM, theta, beta, y; scoring_function)
+function iif(M::Type{GRSM}, theta, beta; scoring_function::F = identity) where {F}
+    return iif(GPCM, theta, beta; scoring_function)
 end
 
-function iif(M::Type{GRSM}, theta, beta, y; scoring_function)
+function iif(M::Type{GRSM}, theta, beta, y; scoring_function::F = identity) where {F}
     return iif(GPCM, theta, beta, y; scoring_function)
 end
