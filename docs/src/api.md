@@ -13,6 +13,7 @@ FourParameterLogisticModel
 PartialCreditModel
 GeneralizedPartialCreditModel
 RatingScaleModel
+GeneralizedRatingScaleModel
 ```
 
 ## Functions
