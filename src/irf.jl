@@ -89,15 +89,15 @@ julia> irf(RSM, 0.0, beta, 3)
 ```
 
 """
-function irf(M::Type{FourPL}, theta::Real, beta::NamedTuple, y = 1)
-    @unpack a, b, c, d = beta
-    prob = c + (d - c) * logistic(a * (theta - b))
+function irf(M::Type{FivePL}, theta::Real, beta::NamedTuple, y = 1)
+    @unpack a, b, c, d, e = beta
+    prob = c + (d - c) * logistic(a * (theta - b)^e)
     return ifelse(y == 1, prob, 1 - prob)
 end
 
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
     pars = merge_pars(M, beta)
-    return irf(FourPL, theta, pars, y)
+    return irf(FivePL, theta, pars, y)
 end
 
 function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)

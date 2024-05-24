@@ -14,6 +14,10 @@ An abstract type representing an item response model with polytomous responses.
 """
 abstract type PolytomousItemResponseModel <: ItemResponseModel end
 
+has_asymmetry(::Type{<:PolytomousItemResponseModel}) = false
+has_lower_asymptote(::Type{<:PolytomousItemResponseModel}) = false
+has_upper_asymptote(::Type{<:PolytomousItemResponseModel}) = false
+
 """
     $(TYPEDEF)
 
@@ -35,6 +39,7 @@ const OnePL = OneParameterLogisticModel
 has_discrimination(::Type{OnePL}) = false
 has_lower_asymptote(::Type{OnePL}) = false
 has_upper_asymptote(::Type{OnePL}) = false
+has_asymmetry(::Type{OnePL}) = false
 
 """
     $(TYPEDEF)
@@ -57,6 +62,7 @@ const OnePLG = OneParameterLogisticPlusGuessingModel
 has_discrimination(::Type{OnePLG}) = false
 has_lower_asymptote(::Type{OnePLG}) = true
 has_upper_asymptote(::Type{OnePLG}) = false
+has_asymmetry(::Type{OnePLG}) = false
 
 """
     $(TYPEDEF)
@@ -79,6 +85,7 @@ const TwoPL = TwoParameterLogisticModel
 has_discrimination(::Type{TwoPL}) = true
 has_lower_asymptote(::Type{TwoPL}) = false
 has_upper_asymptote(::Type{TwoPL}) = false
+has_asymmetry(::Type{TwoPL}) = false
 
 """
     $(TYPEDEF)
@@ -102,6 +109,7 @@ const ThreePL = ThreeParameterLogisticModel
 has_discrimination(::Type{ThreePL}) = true
 has_lower_asymptote(::Type{ThreePL}) = true
 has_upper_asymptote(::Type{ThreePL}) = false
+has_asymmetry(::Type{ThreePL}) = false
 
 """
     $(TYPEDEF)
@@ -126,6 +134,31 @@ const FourPL = FourParameterLogisticModel
 has_discrimination(::Type{FourPL}) = true
 has_lower_asymptote(::Type{FourPL}) = true
 has_upper_asymptote(::Type{FourPL}) = true
+has_asymmetry(::Type{FourPL}) = false
+
+"""
+    $(TYPEDEF)
+
+An abstract representation of a 5 Parameter Logistic Model with an item response function
+given by
+
+``P(Y_{ij}=1|\\theta_i,\\boldsymbol{\\beta}_j) = c_j + (d_j - c_j)\\cdot\\mathrm{logistic}(a_j(\\theta_i - b_j)^e_j)``
+
+The item parameters `beta` must be a destructurable object with the following fields:
+
+- `a`: the item discrimination
+- `b`: the item difficulty (location)
+- `c`: the lower asymptote
+- `d`: the upper asymptote
+- `e`: the item asymmetry
+"""
+abstract type FiveParameterLogisticModel <: DichotomousItemResponseModel end
+const FivePL = FiveParameterLogisticModel
+
+has_discrimination(::Type{FivePL}) = true
+has_lower_asymptote(::Type{FivePL}) = true
+has_upper_asymptote(::Type{FivePL}) = true
+has_asymmetry(::Type{FivePL}) = true
 
 """
     $(TYPEDEF)
@@ -149,8 +182,6 @@ abstract type GeneralizedPartialCreditModel <: PolytomousItemResponseModel end
 const GPCM = GeneralizedPartialCreditModel
 
 has_discrimination(::Type{GPCM}) = true
-has_lower_asymptote(::Type{GPCM}) = false
-has_upper_asymptote(::Type{GPCM}) = false
 
 """
     $(TYPEDEF)
@@ -173,8 +204,6 @@ abstract type PartialCreditModel <: PolytomousItemResponseModel end
 const PCM = PartialCreditModel
 
 has_discrimination(::Type{PCM}) = false
-has_lower_asymptote(::Type{PCM}) = false
-has_upper_asymptote(::Type{PCM}) = false
 
 """
     $(TYPEDEF)
@@ -197,8 +226,6 @@ abstract type RatingScaleModel <: PolytomousItemResponseModel end
 const RSM = RatingScaleModel
 
 has_discrimination(::Type{RSM}) = false
-has_lower_asymptote(::Type{RSM}) = false
-has_upper_asymptote(::Type{RSM}) = false
 
 """
     $(TYPEDEF)
@@ -222,5 +249,3 @@ abstract type GeneralizedRatingScaleModel <: PolytomousItemResponseModel end
 const GRSM = GeneralizedRatingScaleModel
 
 has_discrimination(::Type{GRSM}) = true
-has_lower_asymptote(::Type{GRSM}) = false
-has_upper_asymptote(::Type{GRSM}) = false

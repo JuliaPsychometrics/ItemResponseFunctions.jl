@@ -12,6 +12,8 @@ using SimpleUnPack: @unpack
 import AbstractItemResponseModels: response_type, Dichotomous
 
 export DichotomousItemResponseModel,
+    FivePL,
+    FiveParameterLogisticModel,
     FourPL,
     FourParameterLogisticModel,
     GPCM,
@@ -42,6 +44,6 @@ include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
 
-include("precompile.jl")
+# include("precompile.jl")
 
 end
