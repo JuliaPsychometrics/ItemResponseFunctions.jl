@@ -75,12 +75,23 @@ function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {
     return info
 end
 
-function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta)
+function iif(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta;
+    scoring_function::F = identity,
+) where {F}
     pars = has_discrimination(M) ? beta : merge(beta, (; a = 1.0))
-    return iif(GPCM, theta, pars)
+    return iif(GPCM, theta, pars; scoring_function)
 end
 
-function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
+function iif(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F = identity,
+) where {F}
     prob = irf(M, theta, beta, y)
-    return prob * iif(M, theta, beta)
+    return prob * iif(M, theta, beta; scoring_function)
 end
