@@ -12,11 +12,11 @@ makedocs(;
     checkdocs = :exported,
     modules = [ItemResponseFunctions],
     authors = "Philipp Gewessler",
-    repo = "https://github.com/p-gw/ItemResponseFunctions.jl/blob/{commit}{path}#{line}",
+    repo = "https://github.com/JuliaPsychometrics/ItemResponseFunctions.jl/blob/{commit}{path}#{line}",
     sitename = "ItemResponseFunctions.jl",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical = "https://p-gw.github.io/ItemResponseFunctions.jl",
+        canonical = "https://juliapsychometrics.github.io/ItemResponseFunctions.jl",
         edit_link = "main",
         assets = String[],
     ),
@@ -24,4 +24,7 @@ makedocs(;
     plugins = [],
 )
 
-deploydocs(; repo = "github.com/p-gw/ItemResponseFunctions.jl", devbranch = "main")
+deploydocs(;
+    repo = "github.com/JuliaPsychometrics/ItemResponseFunctions.jl",
+    devbranch = "main",
+)
