@@ -16,6 +16,8 @@ export DichotomousItemResponseModel,
     FourParameterLogisticModel,
     OnePL,
     OneParameterLogisticModel,
+    OnePLG,
+    OneParameterLogisticPlusGuessingModel,
     ThreePL,
     ThreeParameterLogisticModel,
     TwoPL,
@@ -28,9 +30,11 @@ export DichotomousItemResponseModel,
     RatingScaleModel,
     GRSM,
     GeneralizedRatingScaleModel,
-    partial_credit
+    partial_credit,
+    irf!
 
 include("model_types.jl")
+include("utils.jl")
 include("irf.jl")
 include("iif.jl")
 include("expected_score.jl")

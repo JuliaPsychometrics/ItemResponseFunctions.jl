@@ -1,6 +1,10 @@
 @testset "FourParameterLogisticModel" begin
     T = FourParameterLogisticModel
 
+    @test has_discrimination(T) == true
+    @test has_lower_asymptote(T) == true
+    @test has_upper_asymptote(T) == true
+
     @testset "irf" begin
         beta = (a = 1.0, b = 0.0, c = 0.0, d = 1.0)
         @test irf(T, 0.0, beta) == 0.5

@@ -1,9 +1,11 @@
 using Test
 
 using ItemResponseFunctions
+using ItemResponseFunctions: has_discrimination, has_upper_asymptote, has_lower_asymptote
 
 @testset "ItemResponseFunctions.jl" begin
     include("models/one_parameter_logistic.jl")
+    include("models/one_parameter_logistic_plus_guessing.jl")
     include("models/two_parameter_logistic.jl")
     include("models/three_parameter_logistic.jl")
     include("models/four_parameter_logistic.jl")

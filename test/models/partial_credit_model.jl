@@ -1,4 +1,9 @@
 @testset "PartialCreditModel" begin
+
+    @test has_discrimination(PCM) == false
+    @test has_lower_asymptote(PCM) == false
+    @test has_upper_asymptote(PCM) == false
+
     beta = (a = 1.0, b = 0.0, t = randn(3))
     @test irf(PCM, 0.0, beta) == irf(GPCM, 0.0, beta)
     @test irf(PCM, 0.0, beta, 1) == irf(GPCM, 0.0, beta, 1)

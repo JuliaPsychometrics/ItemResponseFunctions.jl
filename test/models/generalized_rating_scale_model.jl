@@ -1,4 +1,9 @@
 @testset "GeneralizedRatingScaleModel" begin
+
+    @test has_discrimination(GRSM) == true
+    @test has_lower_asymptote(GRSM) == false
+    @test has_upper_asymptote(GRSM) == false
+
     beta = (a = 1.3, b = 0.2, t = randn(4))
     @test irf(GRSM, 0.0, beta) == irf(GPCM, 0.0, beta)
     @test irf(GRSM, 0.0, beta, 1) == irf(GPCM, 0.0, beta, 1)

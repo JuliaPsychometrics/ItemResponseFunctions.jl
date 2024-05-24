@@ -8,6 +8,9 @@ ability value `theta` given item parameters `beta`.
 If `response_type(M) == Dichotomous`, then the item response function is evaluated for a
 correct response (`y = 1`) by default.
 
+## Models with polytomous responses
+if `y` is omitted, then the item (category) response function for all categories is returend.
+
 ## Examples
 ### 1 Parameter Logistic Model
 ```jldoctest
@@ -86,42 +89,72 @@ julia> irf(RSM, 0.0, beta, 3)
 ```
 
 """
-function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
-    prob = logistic(theta - beta)
-    return ifelse(y == 1, prob, 1 - prob)
-end
-
-function irf(M::Type{OnePL}, theta, beta, y = 1)
-    return irf(FourPL, theta, merge(beta, (a = 1.0, c = 0.0, d = 1.0)), y)
-end
-
-function irf(M::Type{TwoPL}, theta, beta, y = 1)
-    return irf(FourPL, theta, merge(beta, (; c = 0.0, d = 1.0)), y)
-end
-
-function irf(M::Type{ThreePL}, theta, beta, y = 1)
-    return irf(FourPL, theta, merge(beta, (; d = 1.0)), y)
-end
-
 function irf(M::Type{FourPL}, theta::Real, beta::NamedTuple, y = 1)
     @unpack a, b, c, d = beta
     prob = c + (d - c) * logistic(a * (theta - b))
     return ifelse(y == 1, prob, 1 - prob)
 end
 
-function irf(M::Type{GPCM}, theta, beta)
-    @unpack a, b, t = beta
-    extended = zeros(length(t) + 1)
-    @. extended[2:end] = a * (theta - b + t)
-    cumsum!(extended, extended)
-    softmax!(extended, extended)
-    return extended
+function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
+    pars = merge_pars(M, beta)
+    return irf(FourPL, theta, pars, y)
 end
 
-irf(M::Type{GPCM}, theta, beta, y) = irf(M, theta, beta)[y]
-irf(M::Type{PCM}, theta, beta) = irf(GPCM, theta, merge(beta, (; a = 1.0)))
-irf(M::Type{PCM}, theta, beta, y) = irf(GPCM, theta, merge(beta, (; a = 1.0)), y)
-irf(M::Type{RSM}, theta, beta) = irf(PCM, theta, beta)
-irf(M::Type{RSM}, theta, beta, y) = irf(PCM, theta, beta, y)
-irf(M::Type{GRSM}, theta, beta) = irf(GPCM, theta, beta)
-irf(M::Type{GRSM}, theta, beta, y) = irf(GPCM, theta, beta, y)
+function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
+    prob = logistic(theta - beta)
+    return ifelse(y == 1, prob, 1 - prob)
+end
+
+function irf(M::Type{GPCM}, theta, beta)
+    @unpack t = beta
+    probs = similar(t, length(t) + 1)
+    return irf!(M, probs, theta, beta)
+end
+
+function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
+    pars = has_discrimination(M) ? beta : merge(beta, (; a = 1.0))
+    return irf(GPCM, theta, pars)
+end
+
+irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y) = irf(M, theta, beta)[y]
+
+"""
+    $(SIGNATURES)
+
+An in-place version of [`irf`](@ref) for polytomous item response models.
+Provides efficient computation by mutating `probs` in-place, thus avoiding allocation of an
+output vector.
+
+## Examples
+```jldoctest
+julia> beta = (a = 1.2, b = 0.3, t = zeros(3));
+
+julia> probs = zeros(length(beta.t) + 1);
+
+julia> irf!(GPCM, probs, 0.0, beta)
+4-element Vector{Float64}:
+ 0.3961927292844976
+ 0.2764142877832629
+ 0.19284770477416754
+ 0.13454527815807202
+
+julia> probs
+4-element Vector{Float64}:
+ 0.3961927292844976
+ 0.2764142877832629
+ 0.19284770477416754
+ 0.13454527815807202
+```
+"""
+function irf!(M::Type{GPCM}, probs, theta, beta)
+    @unpack a, b, t = beta
+    probs[1] = 0.0
+    @. probs[2:end] = a * (theta - b + t)
+    cumsum!(probs, probs)
+    softmax!(probs, probs)
+    return probs
+end
+
+function irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
+    return irf!(GPCM, probs, theta, beta)
+end

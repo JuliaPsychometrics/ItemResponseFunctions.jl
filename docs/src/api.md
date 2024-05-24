@@ -7,6 +7,7 @@ CurrentModule = ItemResponseFunctions
 ## Types
 ```@docs
 OneParameterLogisticModel
+OneParameterLogisticPlusGuessingModel
 TwoParameterLogisticModel
 ThreeParameterLogisticModel
 FourParameterLogisticModel
@@ -19,6 +20,7 @@ GeneralizedRatingScaleModel
 ## Functions
 ```@docs
 irf
+irf!
 iif
 expected_score
 information

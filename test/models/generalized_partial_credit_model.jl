@@ -1,4 +1,9 @@
 @testset "GeneralizedPartialCreditModel" begin
+
+    @test has_discrimination(GPCM) == true
+    @test has_lower_asymptote(GPCM) == false
+    @test has_upper_asymptote(GPCM) == false
+
     @testset "irf" begin
         beta = (a = 1.0, b = 0.0, t = zeros(3))
         @test length(irf(GPCM, 0.0, beta)) == length(beta.t) + 1

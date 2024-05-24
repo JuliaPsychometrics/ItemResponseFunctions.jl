@@ -33,23 +33,6 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -1.5, c = 0.15, d = 0.9))
 ```
 
 """
-function iif(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
-    prob = irf(M, theta, beta, y)
-    return prob * (1 - prob)
-end
-
-function iif(M::Type{OnePL}, theta, beta, y = 1)
-    return iif(FourPL, theta, merge(beta, (a = 1.0, c = 0.0, d = 1.0)), y)
-end
-
-function iif(M::Type{TwoPL}, theta, beta, y = 1)
-    return iif(FourPL, theta, merge(beta, (; c = 0.0, d = 1.0)), y)
-end
-
-function iif(M::Type{ThreePL}, theta, beta, y = 1)
-    return iif(FourPL, theta, merge(beta, (; d = 1.0)), y)
-end
-
 function iif(M::Type{FourPL}, theta, beta::NamedTuple, y = 1)
     @unpack a, b, c, d = beta
     prob = irf(M, theta, beta, y)
@@ -65,10 +48,19 @@ function iif(M::Type{FourPL}, theta, beta::NamedTuple, y = 1)
     return info
 end
 
-"""
-    $(SIGNATURES)
-"""
+function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
+    pars = merge_pars(M, beta)
+    return iif(FourPL, theta, pars, y)
+end
+
+function iif(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
+    prob = irf(M, theta, beta, y)
+    return prob * (1 - prob)
+end
+
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
+    @unpack a = beta
+
     probs = irf(M, theta, beta)
     score = expected_score(M, theta, beta)
 
@@ -78,36 +70,28 @@ function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {
         info += (scoring_function(category) - score)^2 * prob
     end
 
-    info *= beta.a^2
+    info *= a^2
 
     return info
 end
 
-function iif(M::Type{GPCM}, theta, beta, y; scoring_function::F = identity) where {F}
+function iif(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta;
+    scoring_function::F = identity,
+) where {F}
+    pars = merge_pars(GPCM, beta)
+    return iif(GPCM, theta, pars; scoring_function)
+end
+
+function iif(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F = identity,
+) where {F}
     prob = irf(M, theta, beta, y)
     return prob * iif(M, theta, beta; scoring_function)
-end
-
-function iif(M::Type{PCM}, theta, beta; scoring_function::F = identity) where {F}
-    return iif(GPCM, theta, merge(beta, (; a = 1.0)); scoring_function)
-end
-
-function iif(M::Type{PCM}, theta, beta, y; scoring_function::F = identity) where {F}
-    return iif(GPCM, theta, merge(beta, (; a = 1.0)), y; scoring_function)
-end
-
-function iif(M::Type{RSM}, theta, beta; scoring_function::F = identity) where {F}
-    return iif(PCM, theta, beta; scoring_function)
-end
-
-function iif(M::Type{RSM}, theta, beta, y; scoring_function::F = identity) where {F}
-    return iif(PCM, theta, beta, y; scoring_function)
-end
-
-function iif(M::Type{GRSM}, theta, beta; scoring_function::F = identity) where {F}
-    return iif(GPCM, theta, beta; scoring_function)
-end
-
-function iif(M::Type{GRSM}, theta, beta, y; scoring_function::F = identity) where {F}
-    return iif(GPCM, theta, beta, y; scoring_function)
 end
