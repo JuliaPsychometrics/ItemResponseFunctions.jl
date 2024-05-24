@@ -42,4 +42,6 @@ include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
 
+include("precompile.jl")
+
 end
