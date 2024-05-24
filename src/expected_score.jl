@@ -55,12 +55,12 @@ julia> expected_score(FourPL, 0.0, betas)
 
 """
 function expected_score(
-    M::Type{<:DichotomousItemResponseModel},
-    theta::T,
+    M::Type{<:ItemResponseModel},
+    theta,
     betas::AbstractVector;
     scoring_function::F = identity,
-) where {T<:Real,F}
-    score = zero(T)
+) where {F}
+    score = zero(theta)
 
     for beta in betas
         score += expected_score(M, theta, beta; scoring_function)
@@ -71,27 +71,32 @@ end
 
 function expected_score(
     M::Type{<:DichotomousItemResponseModel},
-    theta::T,
-    beta;
+    theta,
+    beta::Union{<:Real,NamedTuple};
     scoring_function::F = identity,
-) where {T<:Real,F}
-    score = zero(T)
+) where {F}
+    score = zero(theta)
+
     for y in 0:1
         score += irf(M, theta, beta, y) * scoring_function(y)
     end
+
     return score
 end
 
+# for models with non-item specific thresholds vector holding category probabilities can be
+# pre-allocated
 function expected_score(
-    M::Type{<:PolytomousItemResponseModel},
+    M::Type{<:Union{RSM,GRSM}},
     theta::T,
     betas::AbstractVector;
     scoring_function::F = identity,
 ) where {T<:Real,F}
     score = zero(T)
+    probs = zeros(T, length(first(betas).t) + 1)
 
     for beta in betas
-        score += expected_score(M, theta, beta; scoring_function)
+        score += _expected_score(M, probs, theta, beta; scoring_function)
     end
 
     return score
@@ -100,11 +105,22 @@ end
 function expected_score(
     M::Type{<:PolytomousItemResponseModel},
     theta::T,
-    beta;
+    beta::NamedTuple;
     scoring_function::F = identity,
 ) where {T<:Real,F}
-    score = zero(T)
-    probs = irf(M, theta, beta)
+    probs = zeros(T, length(beta.t) + 1)
+    return _expected_score(M, probs, theta, beta; scoring_function)
+end
+
+function _expected_score(
+    M::Type{<:PolytomousItemResponseModel},
+    probs,
+    theta,
+    beta::NamedTuple;
+    scoring_function::F = identity,
+) where {F}
+    score = zero(theta)
+    irf!(M, probs, theta, beta)
 
     for (category, prob) in enumerate(probs)
         score += prob * scoring_function(category)
