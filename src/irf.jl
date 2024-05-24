@@ -5,11 +5,11 @@ Evaluate the item response function of an item response model `M` for response `
 ability value `theta` given item parameters `beta`.
 
 ## Models with dichotomous responses
-If `response_type(M) == Dichotomous`, then the item response function is evaluated for a
-correct response (`y = 1`) by default.
+If `y` is omitted, then the item response function is evaluated for a correct response,
+`y = 1`.
 
 ## Models with polytomous responses
-if `y` is omitted, then the item (category) response function for all categories is returend.
+If `y` is omitted, then the item (category) response function for all categories is returned.
 
 ## Examples
 ### 1 Parameter Logistic Model

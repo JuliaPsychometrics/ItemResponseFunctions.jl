@@ -1,37 +1,38 @@
 module ItemResponseFunctions
 
-using Reexport
-using SimpleUnPack
+using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
+using LogExpFunctions: logistic, cumsum!, softmax!
+using Reexport: @reexport
+using SimpleUnPack: @unpack
 
+# AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
     ItemResponseModel, irf, iif, expected_score, information
 
 import AbstractItemResponseModels: response_type, Dichotomous
 
-using LogExpFunctions: logistic, cumsum!, softmax!
-using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
-
 export DichotomousItemResponseModel,
     FourPL,
     FourParameterLogisticModel,
+    GPCM,
+    GRSM,
+    GeneralizedPartialCreditModel,
+    GeneralizedRatingScaleModel,
     OnePL,
-    OneParameterLogisticModel,
     OnePLG,
+    OneParameterLogisticModel,
     OneParameterLogisticPlusGuessingModel,
+    PCM,
+    PartialCreditModel,
+    PolytomousItemResponseModel,
+    RSM,
+    RatingScaleModel,
     ThreePL,
     ThreeParameterLogisticModel,
     TwoPL,
     TwoParameterLogisticModel,
-    GPCM,
-    GeneralizedPartialCreditModel,
-    PCM,
-    PartialCreditModel,
-    RSM,
-    RatingScaleModel,
-    GRSM,
-    GeneralizedRatingScaleModel,
-    partial_credit,
-    irf!
+    irf!,
+    partial_credit
 
 include("model_types.jl")
 include("utils.jl")
@@ -40,5 +41,7 @@ include("iif.jl")
 include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
+
+include("precompile.jl")
 
 end
