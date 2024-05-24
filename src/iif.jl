@@ -81,7 +81,7 @@ function iif(
     beta;
     scoring_function::F = identity,
 ) where {F}
-    pars = has_discrimination(M) ? beta : merge(beta, (; a = 1.0))
+    pars = merge_pars(GPCM, beta)
     return iif(GPCM, theta, pars; scoring_function)
 end
 
