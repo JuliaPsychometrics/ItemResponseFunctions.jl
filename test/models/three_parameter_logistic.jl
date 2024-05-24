@@ -1,6 +1,10 @@
 @testset "ThreeParameterLogisticModel" begin
     T = ThreeParameterLogisticModel
 
+    @test has_discrimination(T) == true
+    @test has_lower_asymptote(T) == true
+    @test has_upper_asymptote(T) == false
+
     @testset "irf" begin
         beta = (a = 1.5, b = 0.0, c = 0.2)
         @test irf(T, 0.0, beta) ≈ 0.5 + beta.c / 2

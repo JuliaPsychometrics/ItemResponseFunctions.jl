@@ -1,6 +1,10 @@
 @testset "TwoParameterLogisticModel" begin
     T = TwoParameterLogisticModel
 
+    @test has_discrimination(T) == true
+    @test has_lower_asymptote(T) == false
+    @test has_upper_asymptote(T) == false
+
     @testset "irf" begin
         @test irf(T, 0.0, (a = 1.5, b = 0.0)) == 0.5
         @test irf(T, Inf, (a = 1.5, b = 0.0)) == 1.0
