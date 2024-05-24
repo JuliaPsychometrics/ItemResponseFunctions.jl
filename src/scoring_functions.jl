@@ -1,7 +1,7 @@
 """
     $(SIGNATURES)
 
-Return a scoring function that maps `n` response categories to a score from 0 to `max_score`.
+Return a scoring function that maps `n` response categories to a score (0, `max_score`).
 
 ## Examples
 ```jldoctest

@@ -11,7 +11,7 @@
 You can install ItemResponseFunctions.jl from Github
 
 ```julia
-] add https://github.com/juliapsychometrics/ItemResponseFunctions.jl.git
+] add https://github.com/JuliaPsychometrics/ItemResponseFunctions.jl.git
 ```
 
 ## Usage
