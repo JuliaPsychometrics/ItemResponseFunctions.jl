@@ -4,7 +4,7 @@ CurrentModule = ItemResponseFunctions
 
 # API
 
-## Types
+## Models
 ```@docs
 OneParameterLogisticModel
 OneParameterLogisticPlusGuessingModel
@@ -17,11 +17,16 @@ RatingScaleModel
 GeneralizedRatingScaleModel
 ```
 
-## Functions
+## Item Response Functions
 ```@docs
 irf
 irf!
 iif
 expected_score
 information
+```
+
+## Scoring functions
+```@docs
+partial_credit
 ```
