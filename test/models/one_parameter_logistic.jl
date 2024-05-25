@@ -11,6 +11,10 @@
         @test irf(T, 0.0, -Inf, 1) == 1.0
         @test irf(T, 0.0, Inf, 1) == 0.0
 
+        @test irf(T, 0.0, 0.0) == [0.5, 0.5]
+        @test irf(T, -Inf, 0.0) == [1.0, 0.0]
+        @test irf(T, Inf, 0.0) == [0.0, 1.0]
+
         beta = (; b = 0.0)
         @test irf(T, 0.0, beta, 1) == 0.5
         @test irf(T, 0.0, beta, 0) == 0.5
