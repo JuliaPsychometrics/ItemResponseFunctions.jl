@@ -52,7 +52,7 @@ function information(
     info = zero(T)
 
     for beta in betas
-        info += iif(M, theta, beta, 1)
+        info += iif(M, theta, beta)
     end
 
     return info

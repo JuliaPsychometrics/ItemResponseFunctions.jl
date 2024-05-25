@@ -5,6 +5,9 @@ using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
 using SimpleUnPack: @unpack
 
+using DifferentiationInterface
+import ForwardDiff
+
 # AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
     ItemResponseModel, irf, iif, expected_score, information

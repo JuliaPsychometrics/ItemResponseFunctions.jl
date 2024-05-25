@@ -91,7 +91,7 @@ julia> irf(RSM, 0.0, beta, 3)
 """
 function irf(M::Type{FivePL}, theta::Real, beta::NamedTuple, y = 1)
     @unpack a, b, c, d, e = beta
-    prob = c + (d - c) * logistic(a * (theta - b)^e)
+    prob = c + (d - c) * logistic(a * (theta - b))^e
     return ifelse(y == 1, prob, 1 - prob)
 end
 
