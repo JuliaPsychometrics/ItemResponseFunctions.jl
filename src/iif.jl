@@ -23,13 +23,13 @@ julia> iif(TwoPL, 0.0, (a = 1.3, b = 0.2))
 ### 3 Parameter Logistic Model
 ```jldoctest
 julia> iif(ThreePL, 0.0, (a = 1.5, b = 0.5, c = 0.15))
-0.3162871805861735
+0.3162871805861734
 
 ```
 ### 4 Parameter Logistic Model
 ```jldoctest
 julia> iif(FourPL, 0.0, (a = 2.1, b = -1.5, c = 0.15, d = 0.9))
-0.033871578233130605
+0.03387157823313065
 ```
 
 """
@@ -56,12 +56,6 @@ function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     deriv2 = second_derivative(f, adtype, theta)
     return deriv^2 / prob - deriv2
 end
-
-# function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
-#     pars = merge_pars(M, beta)
-#     return iif(FourPL, theta, pars, y)
-# end
-
 
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
     @unpack a = beta
