@@ -27,9 +27,9 @@
     end
 
     @testset "iif" begin
-        @test iif(T, 0.0, 0.0) == 0.25
-        @test iif(T, 0.0, Inf) == 0.0
-        @test iif(T, 0.0, -Inf) == 0.0
+        @test iif(T, 0.0, 0.0) == [0.125, 0.125]
+        @test iif(T, 0.0, Inf) == [0.0, 0.0]
+        @test iif(T, 0.0, -Inf) == [0.0, 0.0]
 
         for y in 0:1
             @test iif(T, 0.0, 0.0, y) == 0.125
@@ -38,9 +38,9 @@
         end
 
         beta = (; b = 0.0)
-        @test iif(T, 0.0, beta) == 0.25
-        @test iif(T, Inf, beta) == 0.0
-        @test iif(T, -Inf, beta) == 0.0
+        @test iif(T, 0.0, beta) == [0.125, 0.125]
+        @test iif(T, Inf, beta) == [0.0, 0.0]
+        @test iif(T, -Inf, beta) == [0.0, 0.0]
 
         for y in 0:1
             @test iif(T, 0.0, beta, y) == 0.125

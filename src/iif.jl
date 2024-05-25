@@ -4,6 +4,8 @@
 Evaluate the item information function of an item response model `M` for response `y` at
 the ability value `theta` given item parameters `beta`.
 
+If `y` is omitted, the item category information functions for all categories are returned.
+
 ## Examples
 ### 1 Parameter Logistic Model
 ```jldoctest
@@ -33,31 +35,45 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -1.5, c = 0.15, d = 0.9))
 ```
 
 """
-function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple)
-    info = zero(theta)
-    for y in 0:1
-        info += iif(M, theta, beta, y)
-    end
-    return info
-end
-
-function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple, y)
+function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
     return _iif(M, theta, beta, y)
 end
 
-iif(M::Type{OnePL}, theta, beta::Real, y) = iif(M, theta, (; b = beta), y)
-iif(M::Type{OnePL}, theta, beta::Real) = iif(M, theta, (; b = beta))
+function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta)
+    info = zeros(2)
+    return _iif!(M, info, theta, beta)
+end
+
+function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
+    info[1] = _iif(M, theta, beta, 0)
+    info[2] = _iif(M, theta, beta, 1)
+    return info
+end
 
 function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    adtype = AutoForwardDiff()
-    f = x -> irf(M, x, beta, y)
-    prob, deriv = value_and_derivative(f, adtype, theta)
-    iszero(prob) && return 0.0  # early return to avoid NaNs
-    deriv2 = second_derivative(f, adtype, theta)
+    prob, deriv, deriv2 = _theta_deriv(M, theta, beta, y)
+    prob == 0.0 && return 0.0  # early return to avoid NaNs
     return deriv^2 / prob - deriv2
 end
 
+# generic implementation using autodiff
+function _theta_deriv(M::Type{<:ItemResponseModel}, theta, beta, y)
+    adtype = AutoForwardDiff()
+    f = x -> irf(M, x, beta, y)
+    prob, deriv = value_and_derivative(f, adtype, theta)
+    deriv2 = second_derivative(f, adtype, theta)
+    return prob, deriv, deriv2
+end
+
+# TODO: analytic derivatives
+# _theta_deriv(M, theta, beta, y) -> prob, deriv, deriv2
+
+# special case for 1PL with numeric beta
+iif(M::Type{OnePL}, theta, beta::Real, y) = iif(M, theta, (; b = beta), y)
+iif(M::Type{OnePL}, theta, beta::Real) = iif(M, theta, (; b = beta))
+
+# polytomous models
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
     checkpars(M, beta)
     @unpack a = beta

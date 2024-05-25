@@ -19,17 +19,17 @@
 
     @testset "iif" begin
         beta = (b = 0.0, c = 0.0)
-        @test iif(T, 0.0, beta) == 0.25
-        @test iif(T, -Inf, beta) == 0.0
-        @test iif(T, Inf, beta) == 0.0
+        @test iif(T, 0.0, beta) == [0.125, 0.125]
+        @test iif(T, -Inf, beta) == [0.0, 0.0]
+        @test iif(T, Inf, beta) == [0.0, 0.0]
 
         @test iif(T, 0.0, beta, 1) == 0.125
         @test iif(T, -Inf, beta, 1) == 0.0
         @test iif(T, Inf, beta, 1) == 0.0
 
         beta = (b = 0.0, c = 0.1)
-        @test iif(T, -Inf, beta) == 0.0
-        @test iif(T, Inf, beta) == 0.0
+        @test iif(T, -Inf, beta) == [0.0, 0.0]
+        @test iif(T, Inf, beta) == [0.0, 0.0]
         @test iif(T, -Inf, beta, 1) == 0.0
         @test iif(T, Inf, beta, 1) == 0.0
     end

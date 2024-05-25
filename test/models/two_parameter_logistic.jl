@@ -13,10 +13,10 @@
     end
 
     @testset "iif" begin
-        @test iif(T, 0.0, (a = 1.0, b = 0.0)) == 0.25
-        @test iif(T, Inf, (a = 1.0, b = 0.0)) == 0.0
-        @test iif(T, -Inf, (a = 1.0, b = 0.0)) == 0.0
-        @test iif(T, 0.0, (a = 1.5, b = 0.0)) == 1.5^2 * 0.25
+        @test iif(T, 0.0, (a = 1.0, b = 0.0)) == [0.125, 0.125]
+        @test iif(T, Inf, (a = 1.0, b = 0.0)) == [0.0, 0.0]
+        @test iif(T, -Inf, (a = 1.0, b = 0.0)) == [0.0, 0.0]
+        @test iif(T, 0.0, (a = 1.5, b = 0.0), 1) == 1.5^2 * 0.125
     end
 
     @testset "expected_score" begin

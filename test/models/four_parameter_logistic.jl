@@ -21,13 +21,13 @@
 
     @testset "iif" begin
         beta = (a = 1.0, b = 0.0, c = 0.0, d = 1.0)
-        @test iif(T, 0.0, beta) == 0.25
-        @test iif(T, Inf, beta) == 0.0
-        @test iif(T, -Inf, beta) == 0.0
+        @test iif(T, 0.0, beta) == [0.125, 0.125]
+        @test iif(T, Inf, beta) == [0.0, 0.0]
+        @test iif(T, -Inf, beta) == [0.0, 0.0]
 
         beta = (a = 2.1, b = 0.2, c = 0.2, d = 0.95)
-        @test iif(T, Inf, beta) == 0.0
-        @test iif(T, -Inf, beta) == 0.0
+        @test iif(T, Inf, beta) == [0.0, 0.0]
+        @test iif(T, -Inf, beta) == [0.0, 0.0]
     end
 
     @testset "expected_score" begin

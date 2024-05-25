@@ -52,9 +52,17 @@ function information(
     info = zero(T)
 
     for beta in betas
-        info += iif(M, theta, beta)
+        info += information(M, theta, beta)
     end
 
+    return info
+end
+
+function information(M::Type{<:DichotomousItemResponseModel}, theta, beta)
+    info = zero(theta)
+    for y in 0:1
+        info += iif(M, theta, beta, y)
+    end
     return info
 end
 
