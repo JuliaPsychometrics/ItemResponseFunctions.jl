@@ -7,14 +7,16 @@
 
     @testset "irf" begin
         beta = (a = 1.0, b = 0.0, c = 0.0, d = 1.0)
-        @test irf(T, 0.0, beta) == 0.5
-        @test irf(T, Inf, beta) == 1.0
-        @test irf(T, -Inf, beta) == 0.0
+        @test irf(T, 0.0, beta, 1) == 0.5
+        @test irf(T, Inf, beta, 1) == 1.0
+        @test irf(T, -Inf, beta, 1) == 0.0
+        @test irf(T, 0.0, beta) == [0.5, 0.5]
 
         beta = (a = 1.5, b = 0.0, c = 0.2, d = 0.8)
-        @test irf(T, 0.0, beta) == 0.5
-        @test irf(T, Inf, beta) == 0.8
-        @test irf(T, -Inf, beta) == 0.2
+        @test irf(T, 0.0, beta, 1) == 0.5
+        @test irf(T, Inf, beta, 1) == 0.8
+        @test irf(T, -Inf, beta, 1) == 0.2
+        @test irf(T, 0.0, beta) == [0.5, 0.5]
     end
 
     @testset "iif" begin

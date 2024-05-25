@@ -13,6 +13,8 @@
 
         @test irf(T, -Inf, (; b = 0.0, c = 0.2), 1) == 0.2
         @test irf(T, Inf, (; b = 0.0, c = 0.2), 1) == 1.0
+
+        @test irf(T, 0.0, (; b = 0.0, c = 0.2)) ≈ [0.4, 0.6]
     end
 
     @testset "iif" begin

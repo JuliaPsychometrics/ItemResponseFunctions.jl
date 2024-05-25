@@ -7,9 +7,10 @@
 
     @testset "irf" begin
         beta = (a = 1.5, b = 0.0, c = 0.2)
-        @test irf(T, 0.0, beta) ≈ 0.5 + beta.c / 2
-        @test irf(T, Inf, beta) == 1.0
-        @test irf(T, -Inf, beta) == beta.c
+        @test irf(T, 0.0, beta, 1) ≈ 0.5 + beta.c / 2
+        @test irf(T, Inf, beta, 1) == 1.0
+        @test irf(T, -Inf, beta, 1) == beta.c
+        @test irf(T, 0.0, beta) ≈ [0.5 - beta.c / 2, 0.5 + beta.c / 2]
     end
 
     @testset "iif" begin

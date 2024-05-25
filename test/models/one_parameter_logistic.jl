@@ -16,6 +16,10 @@
         @test irf(T, 0.0, beta, 0) == 0.5
         @test irf(T, -Inf, beta, 1) == 0.0
         @test irf(T, Inf, beta, 1) == 1.0
+
+        @test irf(T, 0.0, beta) == [0.5, 0.5]
+        @test irf(T, -Inf, beta) == [1.0, 0.0]
+        @test irf(T, Inf, beta) == [0.0, 1.0]
     end
 
     @testset "iif" begin

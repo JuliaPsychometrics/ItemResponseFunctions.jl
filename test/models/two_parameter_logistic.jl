@@ -6,9 +6,10 @@
     @test has_upper_asymptote(T) == false
 
     @testset "irf" begin
-        @test irf(T, 0.0, (a = 1.5, b = 0.0)) == 0.5
-        @test irf(T, Inf, (a = 1.5, b = 0.0)) == 1.0
-        @test irf(T, -Inf, (a = 1.5, b = 0.0)) == 0.0
+        @test irf(T, 0.0, (a = 1.5, b = 0.0), 1) == 0.5
+        @test irf(T, Inf, (a = 1.5, b = 0.0), 1) == 1.0
+        @test irf(T, -Inf, (a = 1.5, b = 0.0), 1) == 0.0
+        @test irf(T, 0.0, (a = 1.5, b = 0.0)) == [0.5, 0.5]
     end
 
     @testset "iif" begin
