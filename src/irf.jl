@@ -89,34 +89,40 @@ julia> irf(RSM, 0.0, beta, 3)
 ```
 
 """
-function irf(M::Type{FivePL}, theta::Real, beta::NamedTuple, y = 1)
+function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
+    checkresponsetype(response_type(M), y)
+    pars = merge_pars(M, beta)
+    return _irf(M, theta, pars, y)
+end
+
+function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
+    checkresponsetype(response_type(M), y)
+    prob = logistic(theta - beta)
+    return ifelse(y == 1, prob, 1 - prob)
+end
+
+function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple, y)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
     return ifelse(y == 1, prob, 1 - prob)
 end
 
-function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
+# polytomous models
+function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     pars = merge_pars(M, beta)
-    return irf(FivePL, theta, pars, y)
+    return _irf(GPCM, theta, pars)
 end
 
-function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
-    prob = logistic(theta - beta)
-    return ifelse(y == 1, prob, 1 - prob)
-end
-
-function irf(M::Type{GPCM}, theta, beta)
+function _irf(M::Type{GPCM}, theta, beta)
     @unpack t = beta
     probs = similar(t, length(t) + 1)
     return irf!(M, probs, theta, beta)
 end
 
-function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
-    pars = has_discrimination(M) ? beta : merge(beta, (; a = 1.0))
-    return irf(GPCM, theta, pars)
+function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
+    checkresponsetype(response_type(M), y)
+    return irf(M, theta, beta)[y]
 end
-
-irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y) = irf(M, theta, beta)[y]
 
 """
     $(SIGNATURES)
@@ -146,15 +152,15 @@ julia> probs
  0.13454527815807202
 ```
 """
-function irf!(M::Type{GPCM}, probs, theta, beta)
+function irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
+    return _irf!(GPCM, probs, theta, beta)
+end
+
+function _irf!(M::Type{GPCM}, probs, theta, beta)
     @unpack a, b, t = beta
     probs[1] = 0.0
     @. probs[2:end] = a * (theta - b + t)
     cumsum!(probs, probs)
     softmax!(probs, probs)
     return probs
-end
-
-function irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
-    return irf!(GPCM, probs, theta, beta)
 end

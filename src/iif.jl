@@ -36,12 +36,13 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -1.5, c = 0.15, d = 0.9))
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple)
     info = zero(theta)
     for y in 0:1
-        info += _iif(M, theta, beta, y)
+        info += iif(M, theta, beta, y)
     end
     return info
 end
 
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple, y)
+    checkresponsetype(response_type(M), y)
     return _iif(M, theta, beta, y)
 end
 
@@ -91,6 +92,7 @@ function iif(
     y;
     scoring_function::F = identity,
 ) where {F}
+    checkresponsetype(response_type(M), y)
     prob = irf(M, theta, beta, y)
     return prob * iif(M, theta, beta; scoring_function)
 end

@@ -14,6 +14,8 @@ An abstract type representing an item response model with polytomous responses.
 """
 abstract type PolytomousItemResponseModel <: ItemResponseModel end
 
+response_type(::Type{<:PolytomousItemResponseModel}) = Nominal
+
 has_stiffness(::Type{<:PolytomousItemResponseModel}) = false
 has_lower_asymptote(::Type{<:PolytomousItemResponseModel}) = false
 has_upper_asymptote(::Type{<:PolytomousItemResponseModel}) = false

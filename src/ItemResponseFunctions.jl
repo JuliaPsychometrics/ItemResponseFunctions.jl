@@ -1,5 +1,6 @@
 module ItemResponseFunctions
 
+using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
 using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
@@ -12,7 +13,7 @@ import ForwardDiff
 @reexport import AbstractItemResponseModels:
     ItemResponseModel, irf, iif, expected_score, information
 
-import AbstractItemResponseModels: response_type, Dichotomous
+import AbstractItemResponseModels: response_type
 
 export DichotomousItemResponseModel,
     FivePL,
