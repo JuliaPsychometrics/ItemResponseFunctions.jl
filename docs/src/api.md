@@ -11,6 +11,7 @@ OneParameterLogisticPlusGuessingModel
 TwoParameterLogisticModel
 ThreeParameterLogisticModel
 FourParameterLogisticModel
+FiveParameterLogisticModel
 PartialCreditModel
 GeneralizedPartialCreditModel
 RatingScaleModel
