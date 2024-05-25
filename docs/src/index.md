@@ -30,11 +30,11 @@ using ItemResponseFunctions
 
 beta = (; b = 0.5)
 
-irf(OnePL, 0.0, beta)
-iif(OnePL, 0.0, beta)
+irf(OnePL, 0.0, beta, 1)
+iif(OnePL, 0.0, beta, 1)
 ```
 
-evaluates the item response function and item information function at ability value `0.0` for an item with difficulty `0.5`.
+evaluates the item response function and item information function for response `y` at ability value `0.0` for an item with difficulty `0.5`.
 
 Given an array of item parameters (a test) and an ability value, the test response function and test information can be calculated by
 
