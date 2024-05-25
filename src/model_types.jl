@@ -14,7 +14,7 @@ An abstract type representing an item response model with polytomous responses.
 """
 abstract type PolytomousItemResponseModel <: ItemResponseModel end
 
-has_asymmetry(::Type{<:PolytomousItemResponseModel}) = false
+has_stiffness(::Type{<:PolytomousItemResponseModel}) = false
 has_lower_asymptote(::Type{<:PolytomousItemResponseModel}) = false
 has_upper_asymptote(::Type{<:PolytomousItemResponseModel}) = false
 
@@ -39,7 +39,7 @@ const OnePL = OneParameterLogisticModel
 has_discrimination(::Type{OnePL}) = false
 has_lower_asymptote(::Type{OnePL}) = false
 has_upper_asymptote(::Type{OnePL}) = false
-has_asymmetry(::Type{OnePL}) = false
+has_stiffness(::Type{OnePL}) = false
 
 """
     $(TYPEDEF)
@@ -62,7 +62,7 @@ const OnePLG = OneParameterLogisticPlusGuessingModel
 has_discrimination(::Type{OnePLG}) = false
 has_lower_asymptote(::Type{OnePLG}) = true
 has_upper_asymptote(::Type{OnePLG}) = false
-has_asymmetry(::Type{OnePLG}) = false
+has_stiffness(::Type{OnePLG}) = false
 
 """
     $(TYPEDEF)
@@ -85,7 +85,7 @@ const TwoPL = TwoParameterLogisticModel
 has_discrimination(::Type{TwoPL}) = true
 has_lower_asymptote(::Type{TwoPL}) = false
 has_upper_asymptote(::Type{TwoPL}) = false
-has_asymmetry(::Type{TwoPL}) = false
+has_stiffness(::Type{TwoPL}) = false
 
 """
     $(TYPEDEF)
@@ -109,7 +109,7 @@ const ThreePL = ThreeParameterLogisticModel
 has_discrimination(::Type{ThreePL}) = true
 has_lower_asymptote(::Type{ThreePL}) = true
 has_upper_asymptote(::Type{ThreePL}) = false
-has_asymmetry(::Type{ThreePL}) = false
+has_stiffness(::Type{ThreePL}) = false
 
 """
     $(TYPEDEF)
@@ -134,7 +134,7 @@ const FourPL = FourParameterLogisticModel
 has_discrimination(::Type{FourPL}) = true
 has_lower_asymptote(::Type{FourPL}) = true
 has_upper_asymptote(::Type{FourPL}) = true
-has_asymmetry(::Type{FourPL}) = false
+has_stiffness(::Type{FourPL}) = false
 
 """
     $(TYPEDEF)
@@ -158,7 +158,7 @@ const FivePL = FiveParameterLogisticModel
 has_discrimination(::Type{FivePL}) = true
 has_lower_asymptote(::Type{FivePL}) = true
 has_upper_asymptote(::Type{FivePL}) = true
-has_asymmetry(::Type{FivePL}) = true
+has_stiffness(::Type{FivePL}) = true
 
 """
     $(TYPEDEF)

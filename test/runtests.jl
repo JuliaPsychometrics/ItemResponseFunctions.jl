@@ -2,7 +2,7 @@ using Test
 
 using ItemResponseFunctions
 using ItemResponseFunctions:
-    has_discrimination, has_upper_asymptote, has_lower_asymptote, has_asymmetry
+    has_discrimination, has_upper_asymptote, has_lower_asymptote, has_stiffness
 
 @testset "ItemResponseFunctions.jl" begin
     include("models/one_parameter_logistic.jl")
