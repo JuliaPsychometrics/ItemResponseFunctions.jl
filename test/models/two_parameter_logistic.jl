@@ -20,14 +20,20 @@
     end
 
     @testset "expected_score" begin
-        @test expected_score(T, 0.0, fill((a = 2.0, b = 0.0), 5)) == 2.5
-        @test expected_score(T, Inf, fill((a = 2.0, b = 0.0), 5)) == 5.0
-        @test expected_score(T, -Inf, fill((a = 2.0, b = 0.0), 5)) == 0.0
+        beta = (a = 2.0, b = 0.0)
+        betas = fill(beta, 5)
+        @test expected_score(T, 0.0, betas) == 2.5
+        @test expected_score(T, Inf, betas) == 5.0
+        @test expected_score(T, -Inf, betas) == 0.0
+        @test expected_score(T, 0.0, beta) == irf(T, 0.0, beta, 1)
     end
 
     @testset "information" begin
-        @test information(T, 0.0, fill((a = 1.5, b = 0.0), 5)) == 1.5^2 * 0.25 * 5
-        @test information(T, Inf, fill((a = 1.5, b = 0.0), 5)) == 0.0
-        @test information(T, -Inf, fill((a = 1.5, b = 0.0), 5)) == 0.0
+        beta = (a = 1.5, b = 0.0)
+        betas = fill(beta, 5)
+        @test information(T, 0.0, betas) == 1.5^2 * 0.25 * 5
+        @test information(T, Inf, betas) == 0.0
+        @test information(T, -Inf, betas) == 0.0
+        @test information(T, 0.0, beta) == sum(iif(T, 0.0, beta, y) for y in 0:1)
     end
 end

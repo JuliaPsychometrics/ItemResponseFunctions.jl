@@ -36,11 +36,12 @@
         @test expected_score(T, Inf, betas) == 6.0
         @test expected_score(T, -Inf, betas) == 0.0
 
-        betas = fill((a = 1.0, b = 0.0, c = 0.1, d = 0.6), 6)
-        @test expected_score(T, 0.0, betas) ≈
-              (betas[1].c + (betas[1].d - betas[1].c) / 2) * 6
+        beta = (a = 1.0, b = 0.0, c = 0.1, d = 0.6)
+        betas = fill(beta, 6)
+        @test expected_score(T, 0.0, betas) ≈ (beta.c + (beta.d - beta.c) / 2) * 6
         @test expected_score(T, Inf, betas) ≈ betas[1].d * 6
         @test expected_score(T, -Inf, betas) ≈ betas[1].c * 6
+        @test expected_score(T, 0.0, beta) == irf(T, 0.0, beta, 1)
     end
 
     @testset "information" begin
@@ -49,8 +50,10 @@
         @test information(T, Inf, betas) == 0.0
         @test information(T, -Inf, betas) == 0.0
 
-        betas = fill((a = 1.2, b = 0.3, c = 0.1, d = 0.88), 3)
+        beta = (a = 1.2, b = 0.3, c = 0.1, d = 0.88)
+        betas = fill(beta, 3)
         @test information(T, Inf, betas) == 0.0
         @test information(T, -Inf, betas) == 0.0
+        @test information(T, 0.0, beta) == sum(iif(T, 0.0, beta, y) for y in 0:1)
     end
 end

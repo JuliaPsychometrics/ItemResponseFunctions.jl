@@ -40,6 +40,8 @@
         @test expected_score(T, 0.0, betas) ≈ 0.6 * 10
         @test expected_score(T, -Inf, betas) ≈ 0.2 * 10
         @test expected_score(T, Inf, betas) ≈ 1.0 * 10
+
+        @test expected_score(T, 0.0, beta) == irf(T, 0.0, beta, 1)
     end
 
     @testset "information" begin
@@ -47,5 +49,7 @@
         betas = fill(beta, 5)
         @test information(T, -Inf, betas) == 0.0
         @test information(T, Inf, betas) == 0.0
+
+        @test information(T, 0.0, beta) == sum(iif(T, 0.0, beta, y) for y in 0:1)
     end
 end

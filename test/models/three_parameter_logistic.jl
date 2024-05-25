@@ -25,15 +25,18 @@
     end
 
     @testset "expected_score" begin
-        betas = fill((a = 1.0, b = 0.0, c = 0.0), 4)
+        beta = (a = 1.0, b = 0.0, c = 0.0)
+        betas = fill(beta, 4)
         @test expected_score(T, 0.0, betas) == 2.0
         @test expected_score(T, Inf, betas) == 4.0
         @test expected_score(T, -Inf, betas) == 0.0
 
-        betas = fill((a = 1.5, b = 0.0, c = 0.3), 4)
+        beta = (a = 1.5, b = 0.0, c = 0.3)
+        betas = fill(beta, 4)
         @test expected_score(T, 0.0, betas) ≈ (0.5 + betas[1].c / 2) * 4
         @test expected_score(T, Inf, betas) == 4.0
         @test expected_score(T, -Inf, betas) == 0.3 * 4
+        @test expected_score(T, 0.0, beta) == irf(T, 0.0, beta, 1)
     end
 
     @testset "information" begin
@@ -42,8 +45,10 @@
         @test information(T, Inf, betas) == 0.0
         @test information(T, -Inf, betas) == 0.0
 
-        betas = fill((a = 1.3, b = 0.0, c = 0.2), 3)
+        beta = (a = 1.3, b = 0.0, c = 0.2)
+        betas = fill(beta, 3)
         @test information(T, Inf, betas) == 0.0
         @test information(T, -Inf, betas) == 0.0
+        @test information(T, 0.0, beta) == sum(iif(T, 0.0, beta, y) for y in 0:1)
     end
 end
