@@ -8,7 +8,9 @@ using PrecompileTools: @setup_workload, @compile_workload
     @compile_workload begin
         for model in models
             irf(model, 0.0, beta, 1)
+            irf(model, 0.0, beta)
             iif(model, 0.0, beta, 1)
+            iif(model, 0.0, beta)
             expected_score(model, 0.0, betas)
             information(model, 0.0, betas)
         end

@@ -52,7 +52,7 @@ function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     adtype = AutoForwardDiff()
     f = x -> irf(M, x, beta, y)
     prob, deriv = value_and_derivative(f, adtype, theta)
-    iszero(prob) && return 0.0
+    iszero(prob) && return 0.0  # early return to avoid NaNs
     deriv2 = second_derivative(f, adtype, theta)
     return deriv^2 / prob - deriv2
 end
