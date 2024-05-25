@@ -144,7 +144,7 @@ has_stiffness(::Type{FourPL}) = false
 An abstract representation of a 5 Parameter Logistic Model with an item response function
 given by
 
-``P(Y_{ij}=1|\\theta_i,\\boldsymbol{\\beta}_j) = c_j + (d_j - c_j)\\cdot\\mathrm{logistic}(a_j(\\theta_i - b_j)^e_j)``
+``P(Y_{ij}=1|\\theta_i,\\boldsymbol{\\beta}_j) = c_j + (d_j - c_j)\\cdot\\mathrm{logistic}(a_j(\\theta_i - b_j))^{e_j}``
 
 The item parameters `beta` must be a destructurable object with the following fields:
 
@@ -152,7 +152,9 @@ The item parameters `beta` must be a destructurable object with the following fi
 - `b`: the item difficulty (location)
 - `c`: the lower asymptote
 - `d`: the upper asymptote
-- `e`: the item asymmetry
+- `e`: the item stiffness
+
+**Alias:** `FivePL`
 """
 abstract type FiveParameterLogisticModel <: DichotomousItemResponseModel end
 const FivePL = FiveParameterLogisticModel
