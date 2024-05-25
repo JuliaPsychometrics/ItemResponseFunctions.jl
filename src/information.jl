@@ -33,7 +33,7 @@ julia> information(TwoPL, 0.0, betas)
 julia> betas = fill((; a = 1.5, b = 0.5, c = 0.2), 4);
 
 julia> information(ThreePL, 0.0, betas)
-1.102180659985265
+1.1021806599852657
 ```
 
 ### 4 Parameter Logistic Model
@@ -52,7 +52,7 @@ function information(
     info = zero(T)
 
     for beta in betas
-        info += iif(M, theta, beta, 1)
+        info += iif(M, theta, beta)
     end
 
     return info

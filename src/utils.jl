@@ -18,5 +18,9 @@ function merge_pars(M::Type{<:ItemResponseModel}, beta)
         pars = merge(pars, (; d = 1.0))
     end
 
+    if !has_stiffness(M)
+        pars = merge(pars, (; e = 1.0))
+    end
+
     return pars
 end

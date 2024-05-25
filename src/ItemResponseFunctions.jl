@@ -1,17 +1,23 @@
 module ItemResponseFunctions
 
+using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
 using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
 using SimpleUnPack: @unpack
 
+using DifferentiationInterface
+import ForwardDiff
+
 # AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
     ItemResponseModel, irf, iif, expected_score, information
 
-import AbstractItemResponseModels: response_type, Dichotomous
+import AbstractItemResponseModels: response_type
 
 export DichotomousItemResponseModel,
+    FivePL,
+    FiveParameterLogisticModel,
     FourPL,
     FourParameterLogisticModel,
     GPCM,
@@ -42,6 +48,6 @@ include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
 
-include("precompile.jl")
+# include("precompile.jl")
 
 end
