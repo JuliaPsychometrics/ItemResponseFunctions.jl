@@ -2,9 +2,17 @@ using Test
 
 using ItemResponseFunctions
 using ItemResponseFunctions:
-    has_discrimination, has_upper_asymptote, has_lower_asymptote, has_stiffness
+    has_discrimination,
+    has_upper_asymptote,
+    has_lower_asymptote,
+    has_stiffness,
+    checkpars,
+    merge_pars
 
 @testset "ItemResponseFunctions.jl" begin
+    include("utils.jl")
+    include("scoring_functions.jl")
+
     include("models/one_parameter_logistic.jl")
     include("models/one_parameter_logistic_plus_guessing.jl")
     include("models/two_parameter_logistic.jl")
@@ -16,5 +24,4 @@ using ItemResponseFunctions:
     include("models/rating_scale_model.jl")
     include("models/generalized_rating_scale_model.jl")
 
-    include("scoring_functions.jl")
 end
