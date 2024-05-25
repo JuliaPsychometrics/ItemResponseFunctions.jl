@@ -59,6 +59,7 @@ function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
 end
 
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
+    checkpars(M, beta)
     @unpack a = beta
 
     probs = irf(M, theta, beta)

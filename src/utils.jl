@@ -30,17 +30,32 @@ end
 
 Check the validity of the item parameters `beta`.
 """
-function checkpars(M::Type{<:ItemResponseModel}, beta)
-    @unpack a, c, d, e = beta
-    # discriminatino
+function checkpars(M::Type{<:DichotomousItemResponseModel}, beta)
+    check_discrimination(M, beta)
+    check_lower_asymptote(M, beta)
+    check_upper_asymptote(M, beta)
+    check_stiffness(M, beta)
+    return true
+end
+
+function checkpars(M::Type{<:PolytomousItemResponseModel}, beta)
+    check_discrimination(M, beta)
+    return true
+end
+
+function check_discrimination(M, beta)
+    @unpack a = beta
     if !has_discrimination(M)
         if a != 1
             err = "discrimination parameter a != 1"
             throw(ArgumentError(err))
         end
     end
+    return true
+end
 
-    # asymptotes
+function check_lower_asymptote(M, beta)
+    @unpack c = beta
     if has_lower_asymptote(M)
         if c < 0 || c > 1
             err = "lower asymptote c must be in interval (0, 1)"
@@ -52,7 +67,11 @@ function checkpars(M::Type{<:ItemResponseModel}, beta)
             throw(ArgumentError(err))
         end
     end
+    return true
+end
 
+function check_upper_asymptote(M, beta)
+    @unpack c, d = beta
     if has_upper_asymptote(M)
         if d < 0 || d > 1
             err = "upper asymptote d must be in interval (0, 1)"
@@ -69,8 +88,10 @@ function checkpars(M::Type{<:ItemResponseModel}, beta)
             throw(ArgumentError(err))
         end
     end
+end
 
-    # stiffness
+function check_stiffness(M, beta)
+    @unpack e = beta
     if has_stiffness(M)
         if e < 0
             err = "stiffness parameter e must be positive"
@@ -82,6 +103,5 @@ function checkpars(M::Type{<:ItemResponseModel}, beta)
             throw(ArgumentError(err))
         end
     end
-
     return true
 end
