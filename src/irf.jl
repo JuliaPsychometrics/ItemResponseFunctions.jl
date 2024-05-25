@@ -102,6 +102,7 @@ function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
 end
 
 function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple, y)
+    checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
     return ifelse(y == 1, prob, 1 - prob)
@@ -157,6 +158,7 @@ function irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
 end
 
 function _irf!(M::Type{GPCM}, probs, theta, beta)
+    checkpars(M, beta)
     @unpack a, b, t = beta
     probs[1] = 0.0
     @. probs[2:end] = a * (theta - b + t)
