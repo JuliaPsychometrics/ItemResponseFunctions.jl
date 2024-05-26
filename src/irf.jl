@@ -4,28 +4,28 @@
 Evaluate the item response function of an item response model `M` for response `y` at the
 ability value `theta` given item parameters `beta`.
 
-## Models with dichotomous responses
-If `y` is omitted, then the item response function is evaluated for a correct response,
-`y = 1`.
-
-## Models with polytomous responses
-If `y` is omitted, then the item (category) response function for all categories is returned.
+If `y` is omitted, then the item response function is evaluated for all possible responses.
 
 ## Examples
 ### 1 Parameter Logistic Model
 ```jldoctest
-julia> irf(OnePL, 0.0, 0.0)
+julia> irf(OnePL, 0.0, 0.0, 1)
 0.5
 
-julia> irf(OnePL, 0.0, (; b = 0.5))
+julia> irf(OnePL, 0.0, (; b = 0.5), 1)
 0.37754066879814546
+
+julia> irf(OnePL, 0.0, 0.5)
+2-element Vector{Float64}:
+ 0.6224593312018545
+ 0.37754066879814546
 ```
 
 ### 2 Parameter Logistic Model
 ```jldoctest
 julia> beta = (a = 1.5, b = 0.5);
 
-julia> irf(TwoPL, 0.0, beta)
+julia> irf(TwoPL, 0.0, beta, 1)
 0.32082130082460697
 ```
 
@@ -33,7 +33,7 @@ julia> irf(TwoPL, 0.0, beta)
 ```jldoctest
 julia> beta = (a = 1.5, b = 0.5, c = 0.2);
 
-julia> irf(ThreePL, 0.0, beta)
+julia> irf(ThreePL, 0.0, beta, 1)
 0.4566570406596856
 ```
 
@@ -41,7 +41,7 @@ julia> irf(ThreePL, 0.0, beta)
 ```jldoctest
 julia> beta = (a = 1.5, b = 0.5, c = 0.2, d = 0.8);
 
-julia> irf(FourPL, 0.0, beta)
+julia> irf(FourPL, 0.0, beta, 1)
 0.3924927804947642
 ```
 
@@ -89,46 +89,73 @@ julia> irf(RSM, 0.0, beta, 3)
 ```
 
 """
-function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y = 1)
+function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
     pars = merge_pars(M, beta)
     return _irf(M, theta, pars, y)
 end
 
-function irf(M::Type{OnePL}, theta::Real, beta::Real, y = 1)
-    checkresponsetype(response_type(M), y)
-    prob = logistic(theta - beta)
-    return ifelse(y == 1, prob, 1 - prob)
+function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta)
+    pars = merge_pars(M, beta)
+    probs = zeros(2)
+    return _irf!(M, probs, theta, pars)
 end
 
-function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta::NamedTuple, y)
+function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
     return ifelse(y == 1, prob, 1 - prob)
 end
 
+function _irf!(M::Type{<:DichotomousItemResponseModel}, probs, theta, beta)
+    probs[1] = _irf(M, theta, beta, 0)
+    probs[2] = 1 - probs[1]
+    return probs
+end
+
+# special case for 1PL with numeric beta
+function irf(M::Type{OnePL}, theta, beta::Real, y)
+    checkresponsetype(response_type(M), y)
+    prob = logistic(theta - beta)
+    return ifelse(y == 1, prob, 1 - prob)
+end
+
+function irf(M::Type{OnePL}, theta, beta::Real)
+    prob = irf(M, theta, beta, 1)
+    return [1 - prob, prob]
+end
+
 # polytomous models
-function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
-    pars = merge_pars(M, beta)
-    return _irf(GPCM, theta, pars)
-end
-
-function _irf(M::Type{GPCM}, theta, beta)
-    @unpack t = beta
-    probs = similar(t, length(t) + 1)
-    return irf!(M, probs, theta, beta)
-end
-
 function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
     return irf(M, theta, beta)[y]
 end
 
+function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
+    pars = merge_pars(M, beta)
+    checkpars(M, pars)
+
+    @unpack t = beta
+    probs = similar(t, length(t) + 1)
+
+    return _irf!(M, probs, theta, pars)
+end
+
+function _irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
+    checkpars(M, beta)
+    @unpack a, b, t = beta
+    probs[1] = 0.0
+    @. probs[2:end] = a * (theta - b + t)
+    cumsum!(probs, probs)
+    softmax!(probs, probs)
+    return probs
+end
+
 """
     $(SIGNATURES)
 
-An in-place version of [`irf`](@ref) for polytomous item response models.
+An in-place version of [`irf`](@ref).
 Provides efficient computation by mutating `probs` in-place, thus avoiding allocation of an
 output vector.
 
@@ -153,16 +180,7 @@ julia> probs
  0.13454527815807202
 ```
 """
-function irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
-    return _irf!(GPCM, probs, theta, beta)
-end
-
-function _irf!(M::Type{GPCM}, probs, theta, beta)
-    checkpars(M, beta)
-    @unpack a, b, t = beta
-    probs[1] = 0.0
-    @. probs[2:end] = a * (theta - b + t)
-    cumsum!(probs, probs)
-    softmax!(probs, probs)
-    return probs
+function irf!(M::Type{<:ItemResponseModel}, probs, theta, beta)
+    pars = merge_pars(M, beta)
+    return _irf!(M, probs, theta, pars)
 end
