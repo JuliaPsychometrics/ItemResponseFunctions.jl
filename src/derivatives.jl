@@ -6,7 +6,7 @@ Returns the primal value and the first derivative.
 """
 function derivative_theta(M::Type{<:ItemResponseModel}, theta, beta, y)
     prob = irf(M, theta, beta, y)
-    deriv = ForwardDiff.derivative(x -> irf(M, x, beta, y), theta)
+    deriv = derivative(x -> irf(M, x, beta, y), AutoForwardDiff(), theta)
     return prob, deriv
 end
 
@@ -52,7 +52,7 @@ Returns the primal value, the first and the second derivative.
 """
 function second_derivative_theta(M::Type{<:ItemResponseModel}, theta, beta, y)
     prob, deriv = derivative_theta(M, theta, beta, y)
-    deriv2 = ForwardDiff.derivative(x -> irf(M, x, beta, y), theta)
+    deriv2 = second_derivative(x -> irf(M, x, beta, y), AutoForwardDiff(), theta)
     return prob, deriv, deriv2
 end
 
@@ -63,6 +63,13 @@ function second_derivative_theta(M::Type{FourPL}, theta, beta, y)
     qu = 1 - pu
     deriv2 = a^2 * (d - c) * (2 * (qu^2 * pu) - pu * qu) * ifelse(y == 1, 1, -1)
     return prob, deriv, deriv2
+end
+
+function mirt(theta, beta)
+    @unpack a, c, d = beta
+    Pstar = irf(TwoPL, theta, beta, 1)
+    return 2 * (d - c) * a^2 * ((1 - Pstar)^2 * Pstar) -
+           (d - c) * a^2 * (Pstar * (1 - Pstar))
 end
 
 function second_derivative_theta(M::Type{ThreePL}, theta, beta, y)
