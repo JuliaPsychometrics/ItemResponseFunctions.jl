@@ -40,9 +40,7 @@ export DichotomousItemResponseModel,
     irf!,
     partial_credit,
     derivative_theta,
-    derivative_theta2,
-    second_derivative_theta,
-    second_derivative_theta2
+    second_derivative_theta
 
 include("model_types.jl")
 include("utils.jl")
