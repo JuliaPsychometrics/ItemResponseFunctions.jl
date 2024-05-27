@@ -41,5 +41,12 @@ end
     @testset "OnePL" begin
         beta = (a = 1, b = 0.1, c = 0, d = 1, e = 1)
         test_derivatives(OnePL, beta)
+        @test all(
+            derivative_theta(OnePL, 0.0, 0.1, 1) .≈ derivative_theta(OnePL, 0.0, beta, 1),
+        )
+        @test all(
+            second_derivative_theta(OnePL, 0.0, 0.1, 1) .≈
+            second_derivative_theta(OnePL, 0.0, beta, 1),
+        )
     end
 end

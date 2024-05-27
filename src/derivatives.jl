@@ -65,13 +65,6 @@ function second_derivative_theta(M::Type{FourPL}, theta, beta, y)
     return prob, deriv, deriv2
 end
 
-function mirt(theta, beta)
-    @unpack a, c, d = beta
-    Pstar = irf(TwoPL, theta, beta, 1)
-    return 2 * (d - c) * a^2 * ((1 - Pstar)^2 * Pstar) -
-           (d - c) * a^2 * (Pstar * (1 - Pstar))
-end
-
 function second_derivative_theta(M::Type{ThreePL}, theta, beta, y)
     pars = merge_pars(M, beta)
     return second_derivative_theta(FourPL, theta, pars, y)
@@ -93,6 +86,6 @@ function second_derivative_theta(M::Type{OnePL}, theta, beta, y)
 end
 
 function second_derivative_theta(M::Type{OnePL}, theta, beta::Real, y)
-    pars = (; b = beta)
+    pars = merge_pars(M, (; b = beta))
     return second_derivative_theta(FourPL, theta, pars, y)
 end
