@@ -38,7 +38,9 @@ export DichotomousItemResponseModel,
     TwoPL,
     TwoParameterLogisticModel,
     irf!,
-    partial_credit
+    partial_credit,
+    derivative_theta,
+    second_derivative_theta
 
 include("model_types.jl")
 include("utils.jl")
@@ -47,6 +49,7 @@ include("iif.jl")
 include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
+include("derivatives.jl")
 
 # include("precompile.jl")
 

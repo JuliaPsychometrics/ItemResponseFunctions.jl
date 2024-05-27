@@ -59,22 +59,10 @@ function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
 end
 
 function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    prob, deriv, deriv2 = _theta_deriv(M, theta, beta, y)
+    prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y)
     prob == 0.0 && return 0.0  # early return to avoid NaNs
     return deriv^2 / prob - deriv2
 end
-
-# generic implementation using autodiff
-function _theta_deriv(M::Type{<:ItemResponseModel}, theta, beta, y)
-    adtype = AutoForwardDiff()
-    f = x -> irf(M, x, beta, y)
-    prob, deriv = value_and_derivative(f, adtype, theta)
-    deriv2 = second_derivative(f, adtype, theta)
-    return prob, deriv, deriv2
-end
-
-# TODO: analytic derivatives
-# _theta_deriv(M, theta, beta, y) -> prob, deriv, deriv2
 
 # special case for 1PL with numeric beta
 iif(M::Type{OnePL}, theta, beta::Real, y) = iif(M, theta, (; b = beta), y)
