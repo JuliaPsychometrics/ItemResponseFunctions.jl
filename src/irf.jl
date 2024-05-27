@@ -101,11 +101,12 @@ function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     return _irf!(M, probs, theta, pars)
 end
 
-function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
+function _irf(M::Type{<:DichotomousItemResponseModel}, theta::Real, beta, y)
     checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
-    return ifelse(y == 1, prob, 1 - prob)
+    res = ifelse(y == 1, prob, 1 - prob)
+    return res
 end
 
 function _irf!(M::Type{<:DichotomousItemResponseModel}, probs, theta, beta)
