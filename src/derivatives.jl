@@ -18,7 +18,7 @@ Returns the primal value, the first and the second derivative.
 """
 function second_derivative_theta(M::Type{<:ItemResponseModel}, theta, beta, y)
     adtype = AutoForwardDiff()
-    prob, deriv = value_and_derivative(x -> irf(M, x, beta, y), adtype, theta)
+    prob, deriv = derivative_theta(M, theta, beta, y)
     deriv2 = second_derivative(x -> irf(M, x, beta, y), adtype, theta)
     return prob, deriv, deriv2
 end
