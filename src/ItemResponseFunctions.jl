@@ -53,6 +53,6 @@ include("information.jl")
 include("scoring_functions.jl")
 include("derivatives.jl")
 
-# include("precompile.jl")
+include("precompile.jl")
 
 end
