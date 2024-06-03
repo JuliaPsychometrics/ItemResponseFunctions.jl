@@ -1,3 +1,5 @@
+import ForwardDiff
+
 function test_derivatives(M, beta)
     theta = rand()
 
