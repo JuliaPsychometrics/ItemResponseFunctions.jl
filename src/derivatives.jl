@@ -31,11 +31,11 @@ function _derivative_theta!(M::Type{<:PolyModelsWithDeriv}, probs, derivs, theta
     @unpack a, b, t = beta
     _irf!(M, probs, theta, beta)
 
-    @show num = vcat(0.0, @. a * (theta - b + t))
-    @show den = sum(num)
+    categories = eachindex(probs)
+    probsum = sum(c * probs[c] for c in categories)
 
-    for c in eachindex(probs)
-        derivs[c] = c * probs[c] * (1 - probs[c])
+    for c in categories
+        derivs[c] = a * probs[c] * (c - probsum)
     end
 
     return probs, derivs
@@ -88,10 +88,6 @@ function _derivative_theta(M::Type{<:DichModelsWithDeriv}, theta, beta, y)
     return prob, deriv
 end
 
-function _derivative_theta(M::Type{<:PolyModelsWithDeriv}, theta, beta)
-    @unpack a, probs = irf()
-end
-
 """
     $(SIGNATURES)
 
@@ -109,7 +105,7 @@ function second_derivative_theta!(M, probs, derivs, derivs2, theta, beta)
 end
 
 function _second_derivative_theta!(
-    M::Type{<:DichotomousItemResponseModel},
+    M::Type{<:ItemResponseModel},
     probs,
     derivs,
     derivs2,
