@@ -9,7 +9,6 @@ using SimpleUnPack: @unpack
 # TODO: explicit imports
 using DifferentiationInterface
 import ForwardDiff
-import Enzyme
 
 # AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
