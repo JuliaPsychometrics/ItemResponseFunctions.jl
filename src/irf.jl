@@ -115,18 +115,6 @@ function _irf!(M::Type{<:DichotomousItemResponseModel}, probs, theta, beta)
     return probs
 end
 
-# special case for 1PL with numeric beta
-function irf(M::Type{OnePL}, theta, beta::Real, y)
-    checkresponsetype(response_type(M), y)
-    prob = logistic(theta - beta)
-    return ifelse(y == 1, prob, 1 - prob)
-end
-
-function irf(M::Type{OnePL}, theta, beta::Real)
-    prob = irf(M, theta, beta, 1)
-    return [1 - prob, prob]
-end
-
 # polytomous models
 function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)

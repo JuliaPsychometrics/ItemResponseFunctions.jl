@@ -64,10 +64,6 @@ function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     return deriv^2 / prob - deriv2
 end
 
-# special case for 1PL with numeric beta
-iif(M::Type{OnePL}, theta, beta::Real, y) = iif(M, theta, (; b = beta), y)
-iif(M::Type{OnePL}, theta, beta::Real) = iif(M, theta, (; b = beta))
-
 # polytomous models
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
     checkpars(M, beta)

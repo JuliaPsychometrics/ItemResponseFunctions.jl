@@ -1,13 +1,15 @@
 module ItemResponseFunctions
 
 using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
-using DifferentiationInterface: derivative, second_derivative, AutoForwardDiff
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
 using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
 using SimpleUnPack: @unpack
 
+# TODO: explicit imports
+using DifferentiationInterface
 import ForwardDiff
+import Enzyme
 
 # AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
@@ -40,7 +42,9 @@ export DichotomousItemResponseModel,
     irf!,
     partial_credit,
     derivative_theta,
-    second_derivative_theta
+    derivative_theta!,
+    second_derivative_theta,
+    second_derivative_theta!
 
 include("model_types.jl")
 include("utils.jl")

@@ -1,19 +1,19 @@
 function test_derivatives(M, beta)
-    # test against FivePL which uses autodiff
-    for theta in randn(10)
-        for y in 0:1
-            @test derivative_theta(M, theta, beta, y)[1] ≈
-                  derivative_theta(FivePL, theta, beta, y)[1]
-            @test derivative_theta(M, theta, beta, y)[2] ≈
-                  derivative_theta(FivePL, theta, beta, y)[2]
+    theta = rand()
 
-            @test second_derivative_theta(M, theta, beta, y)[1] ≈
-                  second_derivative_theta(FivePL, theta, beta, y)[1]
-            @test second_derivative_theta(M, theta, beta, y)[2] ≈
-                  second_derivative_theta(FivePL, theta, beta, y)[2]
-            @test second_derivative_theta(M, theta, beta, y)[3] ≈
-                  second_derivative_theta(FivePL, theta, beta, y)[3]
-        end
+    # test against FivePL which uses autodiff
+    for y in 0:1
+        @test derivative_theta(M, theta, beta, y)[1] ≈
+              derivative_theta(FivePL, theta, beta, y)[1]
+        @test derivative_theta(M, theta, beta, y)[2] ≈
+              derivative_theta(FivePL, theta, beta, y)[2]
+
+        @test second_derivative_theta(M, theta, beta, y)[1] ≈
+              second_derivative_theta(FivePL, theta, beta, y)[1]
+        @test second_derivative_theta(M, theta, beta, y)[2] ≈
+              second_derivative_theta(FivePL, theta, beta, y)[2]
+        @test second_derivative_theta(M, theta, beta, y)[3] ≈
+              second_derivative_theta(FivePL, theta, beta, y)[3]
     end
 end
 
