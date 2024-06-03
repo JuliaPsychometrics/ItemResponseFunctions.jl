@@ -49,4 +49,25 @@ end
             second_derivative_theta(OnePL, 0.0, beta, 1),
         )
     end
+
+    @testset "GPCM" begin
+        # equivalency to 2PL
+        beta_poly = (a = 1.2, b = 0.0, t = (-0.2))
+        beta_dich = (a = 1.2, b = 0.2)
+
+        derivs_2pl = derivative_theta(TwoPL, 0.0, beta_dich)
+        derivs_gpcm = derivative_theta(GPCM, 0.0, beta_poly)
+        @test all(derivs_2pl[1] .≈ derivs_gpcm[1])  # probs
+        @test all(derivs_2pl[2] .≈ derivs_gpcm[2])  # derivs
+
+        derivs2_2pl = second_derivative_theta(TwoPL, 0.0, beta_dich)
+        derivs2_gpcm = second_derivative_theta(GPCM, 0.0, beta_poly)
+
+        @test all(derivs2_2pl[1] .≈ derivs2_gpcm[1])  # probs
+        @test all(derivs2_2pl[2] .≈ derivs2_gpcm[2])  # derivs
+        @test all(derivs2_2pl[3] .≈ derivs2_gpcm[3])  # second derivs
+
+        @test all(derivs_gpcm[1] .≈ derivs2_gpcm[1])  # probs
+        @test all(derivs_gpcm[2] .≈ derivs2_gpcm[2])  # derivs
+    end
 end

@@ -131,10 +131,27 @@ function _second_derivative_theta!(
     return probs, derivs, derivs2
 end
 
-# TODO: polytomous models
-function _second_derivative_theta!(M::Type{<:PolytomousItemResponseModel}, args...)
-    error("Not implemented yet")
-    return nothing
+function _second_derivative_theta!(
+    M::Type{<:PolyModelsWithDeriv},
+    probs,
+    derivs,
+    derivs2,
+    theta,
+    beta,
+)
+    @unpack a, b, t = beta
+    _derivative_theta!(M, probs, derivs, theta, beta)
+
+    categories = eachindex(probs)
+    probsum = sum(c * probs[c] for c in categories)
+    probsum2 = sum(c^2 * probs[c] for c in categories)
+
+    for c in categories
+        derivs[c] = a * probs[c] * (c - probsum)
+        derivs2[c] = a^2 * probs[c] * (c^2 - 2 * c * probsum + 2 * probsum^2 - probsum2)
+    end
+
+    return probs, derivs, derivs2
 end
 
 """
