@@ -32,8 +32,16 @@ iif
 expected_score
 information
 ```
-
-### Scoring functions
+### Utilities
+#### Scoring functions
 ```@docs
 partial_credit
+```
+
+#### Derivatives
+```@docs
+derivative_theta
+derivative_theta!
+second_derivative_theta
+second_derivative_theta!
 ```

@@ -25,7 +25,7 @@ julia> information(OnePL, 0.0, betas)
 julia> betas = fill((; a = 1.2, b = 0.4), 4);
 
 julia> information(TwoPL, 0.0, betas)
-1.3601401228069934
+1.3601401228069936
 ```
 
 ### 3 Parameter Logistic Model
@@ -33,7 +33,7 @@ julia> information(TwoPL, 0.0, betas)
 julia> betas = fill((; a = 1.5, b = 0.5, c = 0.2), 4);
 
 julia> information(ThreePL, 0.0, betas)
-1.1021806599852657
+1.1021806599852655
 ```
 
 ### 4 Parameter Logistic Model

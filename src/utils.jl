@@ -25,6 +25,10 @@ function merge_pars(M::Type{<:ItemResponseModel}, beta)
     return pars
 end
 
+function merge_pars(M::Type{<:Union{OnePL,OnePLG}}, beta::Real)
+    return merge_pars(M, (; b = beta))
+end
+
 """
     $(SIGNATURES)
 

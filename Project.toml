@@ -1,7 +1,7 @@
 name = "ItemResponseFunctions"
 uuid = "18e85bec-f2a0-4122-b3a6-37651333b522"
 authors = ["Philipp Gewessler <p.gewessler@gmx.at>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 AbstractItemResponseModels = "0ab3451c-659c-47cd-a7a9-a2d579e209dd"
@@ -15,14 +15,14 @@ SimpleUnPack = "ce78b400-467f-4804-87d8-8f486da07d0a"
 
 [compat]
 AbstractItemResponseModels = "0.2"
-DifferentiationInterface = "0.4"
+DifferentiationInterface = "0.5"
 DocStringExtensions = "0.9"
 ForwardDiff = "0.10"
 LogExpFunctions = "0.3"
 PrecompileTools = "1"
 Reexport = "1"
 SimpleUnPack = "1"
-julia = "1.8"
+julia = "1.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

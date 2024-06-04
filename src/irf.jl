@@ -18,7 +18,7 @@ julia> irf(OnePL, 0.0, (; b = 0.5), 1)
 julia> irf(OnePL, 0.0, 0.5)
 2-element Vector{Float64}:
  0.6224593312018545
- 0.37754066879814546
+ 0.3775406687981455
 ```
 
 ### 2 Parameter Logistic Model
@@ -101,29 +101,18 @@ function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     return _irf!(M, probs, theta, pars)
 end
 
-function _irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
+function _irf(M::Type{<:DichotomousItemResponseModel}, theta::Real, beta, y)
     checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
-    return ifelse(y == 1, prob, 1 - prob)
+    res = ifelse(y == 1, prob, 1 - prob)
+    return res
 end
 
 function _irf!(M::Type{<:DichotomousItemResponseModel}, probs, theta, beta)
     probs[1] = _irf(M, theta, beta, 0)
     probs[2] = 1 - probs[1]
     return probs
-end
-
-# special case for 1PL with numeric beta
-function irf(M::Type{OnePL}, theta, beta::Real, y)
-    checkresponsetype(response_type(M), y)
-    prob = logistic(theta - beta)
-    return ifelse(y == 1, prob, 1 - prob)
-end
-
-function irf(M::Type{OnePL}, theta, beta::Real)
-    prob = irf(M, theta, beta, 1)
-    return [1 - prob, prob]
 end
 
 # polytomous models
@@ -137,7 +126,7 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     checkpars(M, pars)
 
     @unpack t = beta
-    probs = similar(t, length(t) + 1)
+    probs = zeros(length(t) + 1)
 
     return _irf!(M, probs, theta, pars)
 end

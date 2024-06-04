@@ -37,8 +37,8 @@ julia> iif(ThreePL, 0.0, (a = 1.5, b = 0.5, c = 0.15))
 ```jldoctest
 julia> iif(FourPL, 0.0, (a = 2.1, b = -0.2, c = 0.15, d = 0.9))
 2-element Vector{Float64}:
- 0.19363288880050672
- 0.39951402052782453
+ 0.1936328888005068
+ 0.3995140205278245
 ```
 
 """
@@ -63,10 +63,6 @@ function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     prob == 0.0 && return 0.0  # early return to avoid NaNs
     return deriv^2 / prob - deriv2
 end
-
-# special case for 1PL with numeric beta
-iif(M::Type{OnePL}, theta, beta::Real, y) = iif(M, theta, (; b = beta), y)
-iif(M::Type{OnePL}, theta, beta::Real) = iif(M, theta, (; b = beta))
 
 # polytomous models
 function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}

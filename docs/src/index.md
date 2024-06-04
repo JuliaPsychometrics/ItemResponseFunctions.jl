@@ -8,10 +8,10 @@
 [ItemResponseFunctions.jl](https://github.com/juliapsychometrics/ItemResponseFunctions.jl) implements basic functions for Item Response Theory models. It is built based on the interface designed in [AbstractItemResponseModels.jl](https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl).
 
 ## Installation
-You can install ItemResponseFunctions.jl from Github
+You can install ItemResponseFunctions.jl from the General package registry:
 
 ```julia
-] add https://github.com/JuliaPsychometrics/ItemResponseFunctions.jl.git
+] add ItemResponseFunctions
 ```
 
 ## Usage
