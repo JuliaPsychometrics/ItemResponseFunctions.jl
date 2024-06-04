@@ -92,6 +92,13 @@ end
 
         @test derivative_theta(OnePL, 0.0, 0.1)[1] == derivative_theta(OnePL, 0.0, beta)[1]
         @test derivative_theta(OnePL, 0.0, 0.1)[2] == derivative_theta(OnePL, 0.0, beta)[2]
+
+        @test second_derivative_theta(OnePL, 0.0, 0.1)[1] ==
+              second_derivative_theta(OnePL, 0.0, beta)[1]
+        @test second_derivative_theta(OnePL, 0.0, 0.1)[2] ==
+              second_derivative_theta(OnePL, 0.0, beta)[2]
+        @test second_derivative_theta(OnePL, 0.0, 0.1)[3] ==
+              second_derivative_theta(OnePL, 0.0, beta)[3]
     end
 
     @testset "GPCM" begin
