@@ -52,35 +52,28 @@ function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     return _iif!(M, info, theta, beta)
 end
 
-function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
-    info[1] = _iif(M, theta, beta, 0)
-    info[2] = _iif(M, theta, beta, 1)
-    return info
-end
-
 function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y)
     prob == 0.0 && return 0.0  # early return to avoid NaNs
     return deriv^2 / prob - deriv2
 end
 
-# polytomous models
-function iif(M::Type{GPCM}, theta, beta; scoring_function::F = identity) where {F}
-    checkpars(M, beta)
-    @unpack a = beta
-
-    probs = irf(M, theta, beta)
-    score = expected_score(M, theta, beta)
-
-    info = zero(theta)
-
-    for (category, prob) in enumerate(probs)
-        info += (scoring_function(category) - score)^2 * prob
-    end
-
-    info *= a^2
-
+function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
+    info[1] = _iif(M, theta, beta, 0)
+    info[2] = _iif(M, theta, beta, 1)
     return info
+end
+
+# polytomous models
+function iif(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F = identity,
+) where {F}
+    pars = merge_pars(M, beta)
+    return iif(M, theta, pars; scoring_function)[y]
 end
 
 function iif(
@@ -89,18 +82,72 @@ function iif(
     beta;
     scoring_function::F = identity,
 ) where {F}
-    pars = merge_pars(GPCM, beta)
-    return iif(GPCM, theta, pars; scoring_function)
+    pars = merge_pars(M, beta)
+    checkpars(M, pars)
+
+    infos = zeros(length(beta.t) + 1)
+
+    return _iif!(M, infos, theta, pars; scoring_function)
 end
 
-function iif(
+function _iif!(
     M::Type{<:PolytomousItemResponseModel},
+    infos,
     theta,
-    beta,
-    y;
+    beta;
     scoring_function::F = identity,
 ) where {F}
-    checkresponsetype(response_type(M), y)
-    prob = irf(M, theta, beta, y)
-    return prob * iif(M, theta, beta; scoring_function)
+    checkpars(M, beta)
+    @unpack a = beta
+
+    # reuse infos array to temporarily store probabilities
+    _irf!(M, infos, theta, beta)
+
+    # TODO: should probably just reuse derivative functions
+    categories = eachindex(infos)
+    probsum = sum(scoring_function(c)^2 * infos[c] for c in categories)
+    probsum2 = sum(scoring_function(c) * infos[c] for c in categories)
+
+    for k in eachindex(infos)
+        infos[k] *= a^2 * (probsum - probsum2^2)
+    end
+
+    return infos
+end
+
+"""
+    $(SIGNATURES)
+
+An in-place version of [`iif`](@ref).
+Provides efficient computation of the item category information functions by mutating `infos`
+in-place, thus avoiding allocation of an intermediate arrays and output vector.
+
+## Examples
+```jldoctest
+julia> beta = (a = 0.3, b = 0.1, t = (0.2, -0.5));
+
+julia> infos = zeros(length(beta.t) + 1);
+
+julia> iif!(GPCM, infos, 0.0, beta)
+3-element Vector{Float64}:
+ 0.019962114838441715
+ 0.020570051742573044
+ 0.01718155146775979
+
+julia> infos
+3-element Vector{Float64}:
+ 0.019962114838441715
+ 0.020570051742573044
+ 0.01718155146775979
+```
+"""
+function iif!(
+    M::Type{<:ItemResponseModel},
+    infos,
+    theta,
+    beta;
+    scoring_function::F = identity,
+) where {F}
+    pars = merge_pars(M, beta)
+    return _iif!(M, infos, theta, pars; scoring_function)
 end
