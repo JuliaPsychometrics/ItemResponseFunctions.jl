@@ -1,7 +1,7 @@
 name = "ItemResponseFunctions"
 uuid = "18e85bec-f2a0-4122-b3a6-37651333b522"
 authors = ["Philipp Gewessler <p.gewessler@gmx.at>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 AbstractItemResponseModels = "0ab3451c-659c-47cd-a7a9-a2d579e209dd"
