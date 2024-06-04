@@ -156,16 +156,13 @@ end
 
 """
     $(SIGNATURES)
-"""
-function second_derivative_theta(M, theta, beta) end
-function second_derivative_theta(M, theta, beta, y) end
 
+Calculate the second derivative of the item (category) response function with respect to
+`theta` of model `M` given item parameters `beta` for response `y`.
+Returns the primal value, the first derivative and the second derivative.
 
-"""
-    $(SIGNATURES)
-
-Calculate the second derivative of the item response function with respect to theta.
-Returns the primal value, the first and the second derivative.
+If `y` is omitted, returns primals and derivatives for all possible responses (see also
+[`second_derivative_theta!`](@ref)).
 """
 function second_derivative_theta(M::Type{<:ItemResponseModel}, theta, beta)
     ncat = M <: DichotomousItemResponseModel ? 2 : length(beta.t) + 1
@@ -187,8 +184,9 @@ end
 
 function second_derivative_theta(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     adtype = AutoForwardDiff()
-    prob, deriv = value_and_derivative(x -> irf(M, x, beta, y), adtype, theta)
-    deriv2 = second_derivative(x -> irf(M, x, beta, y), adtype, theta)
+    f = x -> irf(M, x, beta, y)
+    prob, deriv = value_and_derivative(f, adtype, theta)
+    deriv2 = second_derivative(f, adtype, theta)
     return prob, deriv, deriv2
 end
 
