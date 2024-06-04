@@ -1,8 +1,6 @@
 using PrecompileTools: @setup_workload, @compile_workload
 
 @setup_workload begin
-    import ForwardDiff
-
     models = [OnePL, OnePLG, TwoPL, ThreePL, FourPL, FivePL, PCM, GPCM, RSM, GRSM]
     beta = (a = 1.0, b = 0.0, c = 0.0, d = 1.0, e = 1.0, t = zeros(3))
     betas = fill(beta, 3)
