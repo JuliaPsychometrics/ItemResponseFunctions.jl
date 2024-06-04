@@ -15,7 +15,7 @@ SimpleUnPack = "ce78b400-467f-4804-87d8-8f486da07d0a"
 
 [compat]
 AbstractItemResponseModels = "0.2"
-DifferentiationInterface = "0.4"
+DifferentiationInterface = "0.4, 0.5"
 DocStringExtensions = "0.9"
 ForwardDiff = "0.10"
 LogExpFunctions = "0.3"
