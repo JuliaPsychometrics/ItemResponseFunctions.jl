@@ -85,8 +85,7 @@ function iif(
     pars = merge_pars(M, beta)
     checkpars(M, pars)
 
-    @unpack t = beta
-    infos = zeros(length(t) + 1)
+    infos = zeros(length(beta.t) + 1)
 
     return _iif!(M, infos, theta, pars; scoring_function)
 end
@@ -102,11 +101,15 @@ function _iif!(
     @unpack a = beta
 
     # reuse infos array to temporarily store probabilities
-    score = _expected_score(M, infos, theta, beta)
-    irf!(M, infos, theta, beta)
+    _irf!(M, infos, theta, beta)
 
-    for c in eachindex(infos)
-        infos[c] *= (scoring_function(c) - score)^2 * a^2
+    # TODO: should probably just reuse derivative functions
+    categories = eachindex(infos)
+    probsum = sum(scoring_function(c)^2 * infos[c] for c in categories)
+    probsum2 = sum(scoring_function(c) * infos[c] for c in categories)
+
+    for k in eachindex(infos)
+        infos[k] *= a^2 * (probsum - probsum2^2)
     end
 
     return infos

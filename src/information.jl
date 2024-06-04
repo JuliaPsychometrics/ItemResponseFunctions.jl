@@ -44,12 +44,8 @@ julia> information(FourPL, 0.0, betas)
 0.20178122985757524
 ```
 """
-function information(
-    M::Type{<:DichotomousItemResponseModel},
-    theta::T,
-    betas::AbstractVector,
-) where {T<:Real}
-    info = zero(T)
+function information(M::Type{<:ItemResponseModel}, theta, betas::AbstractVector)
+    info = zero(theta)
 
     for beta in betas
         info += information(M, theta, beta)
@@ -58,21 +54,39 @@ function information(
     return info
 end
 
-function information(M::Type{<:DichotomousItemResponseModel}, theta, beta)
+function information(
+    M::Type{<:DichotomousItemResponseModel},
+    theta,
+    beta::Union{<:Real,NamedTuple},
+)
     info = zero(theta)
+
     for y in 0:1
         info += iif(M, theta, beta, y)
     end
+
     return info
 end
 
 function information(
     M::Type{<:PolytomousItemResponseModel},
+    theta::T,
+    beta::NamedTuple;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    infos = zeros(T, length(beta.t) + 1)
+    return _information(M, infos, theta, beta; scoring_function)
+end
+
+function _information(
+    M::Type{<:PolytomousItemResponseModel},
+    infos,
     theta,
-    beta;
+    beta::NamedTuple;
     scoring_function::F = identity,
 ) where {F}
-    return iif(M, theta, beta; scoring_function)
+    iif!(M, infos, theta, beta; scoring_function)
+    return sum(infos)
 end
 
 function information(
