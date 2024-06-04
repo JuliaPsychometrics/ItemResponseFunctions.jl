@@ -105,7 +105,7 @@ function second_derivative_theta!(M, probs, derivs, derivs2, theta, beta)
 end
 
 function _second_derivative_theta!(
-    M::Type{<:ItemResponseModel},
+    M::Type{<:DichotomousItemResponseModel},
     probs,
     derivs,
     derivs2,
@@ -113,6 +113,8 @@ function _second_derivative_theta!(
     beta,
 )
     _derivative_theta!(M, probs, derivs, theta, beta)
+    derivs2[1] = second_derivative(x -> irf(M, x, beta, 0), AutoForwardDiff(), theta)
+    derivs2[2] = second_derivative(x -> irf(M, x, beta, 1), AutoForwardDiff(), theta)
     return probs, derivs, derivs2
 end
 

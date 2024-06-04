@@ -3,8 +3,8 @@ import ForwardDiff
 function test_derivatives(M::Type{<:DichotomousItemResponseModel}, beta)
     theta = rand()
 
-    # test against FivePL which uses autodiff
     for y in 0:1
+        # equivalency to 5PL
         @test derivative_theta(M, theta, beta, y)[1] ≈
               derivative_theta(FivePL, theta, beta, y)[1]
         @test derivative_theta(M, theta, beta, y)[2] ≈
@@ -16,6 +16,19 @@ function test_derivatives(M::Type{<:DichotomousItemResponseModel}, beta)
               second_derivative_theta(FivePL, theta, beta, y)[2]
         @test second_derivative_theta(M, theta, beta, y)[3] ≈
               second_derivative_theta(FivePL, theta, beta, y)[3]
+
+        # equivalency of methods
+        @test derivative_theta(M, theta, beta, y)[1] ≈
+              derivative_theta(M, theta, beta)[1][y+1]
+        @test derivative_theta(M, theta, beta, y)[2] ≈
+              derivative_theta(M, theta, beta)[2][y+1]
+
+        @test second_derivative_theta(M, theta, beta, y)[1] ≈
+              second_derivative_theta(M, theta, beta)[1][y+1]
+        @test second_derivative_theta(M, theta, beta, y)[2] ≈
+              second_derivative_theta(M, theta, beta)[2][y+1]
+        @test second_derivative_theta(M, theta, beta, y)[3] ≈
+              second_derivative_theta(M, theta, beta)[3][y+1]
     end
 end
 
@@ -25,6 +38,7 @@ function test_derivatives(M::Type{<:PolytomousItemResponseModel}, beta)
     categories = 1:(length(beta.t)+1)
 
     for c in categories
+        # equivalency of methods
         @test derivative_theta(M, theta, beta, c)[1] ≈
               derivative_theta(M, theta, beta)[1][c]
         @test derivative_theta(M, theta, beta, c)[2] ≈
@@ -40,6 +54,11 @@ function test_derivatives(M::Type{<:PolytomousItemResponseModel}, beta)
 end
 
 @testset "derivatives" begin
+    @testset "FivePL" begin
+        beta = (a = 2.3, b = 0.1, c = 0.1, d = 0.95, e = 0.88)
+        test_derivatives(FivePL, beta)
+    end
+
     @testset "FourPL" begin
         beta = (a = 2.3, b = 0.1, c = 0.1, d = 0.95, e = 1)
         test_derivatives(FourPL, beta)
