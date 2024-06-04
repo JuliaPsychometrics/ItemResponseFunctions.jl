@@ -19,7 +19,7 @@ end
 const DichModelsWithDeriv = Union{OnePL,TwoPL,ThreePL,FourPL}
 
 function _derivative_theta!(M::Type{<:DichModelsWithDeriv}, probs, derivs, theta, beta)
-    probs[2], derivs[2] = _derivative_theta(FourPL, theta, beta, 1)
+    probs[2], derivs[2] = _derivative_theta(M, theta, beta, 1)
     probs[1] = 1 - probs[2]
     derivs[1] = -derivs[2]
     return probs, derivs
@@ -58,7 +58,7 @@ function derivative_theta(M::Type{<:ItemResponseModel}, theta, beta)
     return derivative_theta!(M, probs, derivs, theta, beta)
 end
 
-function derivative_theta(M::Type{<:Union{OnePL,OnePLG}}, theta, beta::Real)
+function derivative_theta(M::Type{OnePL}, theta, beta::Real)
     pars = merge_pars(M, beta)
     return derivative_theta(M, theta, pars)
 end
@@ -172,7 +172,7 @@ function second_derivative_theta(M::Type{<:ItemResponseModel}, theta, beta)
     return second_derivative_theta!(M, probs, derivs, derivs2, theta, beta)
 end
 
-function second_derivative_theta(M::Type{<:Union{OnePL,OnePLG}}, theta, beta::Real)
+function second_derivative_theta(M::Type{OnePL}, theta, beta::Real)
     pars = merge_pars(M, beta)
     return second_derivative_theta(M, theta, pars)
 end

@@ -1,6 +1,6 @@
 import ForwardDiff
 
-function test_derivatives(M, beta)
+function test_derivatives(M::Type{<:DichotomousItemResponseModel}, beta)
     theta = rand()
 
     # test against FivePL which uses autodiff
@@ -16,6 +16,26 @@ function test_derivatives(M, beta)
               second_derivative_theta(FivePL, theta, beta, y)[2]
         @test second_derivative_theta(M, theta, beta, y)[3] ≈
               second_derivative_theta(FivePL, theta, beta, y)[3]
+    end
+end
+
+function test_derivatives(M::Type{<:PolytomousItemResponseModel}, beta)
+    theta = rand()
+
+    categories = 1:(length(beta.t)+1)
+
+    for c in categories
+        @test derivative_theta(M, theta, beta, c)[1] ≈
+              derivative_theta(M, theta, beta)[1][c]
+        @test derivative_theta(M, theta, beta, c)[2] ≈
+              derivative_theta(M, theta, beta)[2][c]
+
+        @test second_derivative_theta(M, theta, beta, c)[1] ≈
+              second_derivative_theta(M, theta, beta)[1][c]
+        @test second_derivative_theta(M, theta, beta, c)[2] ≈
+              second_derivative_theta(M, theta, beta)[2][c]
+        @test second_derivative_theta(M, theta, beta, c)[3] ≈
+              second_derivative_theta(M, theta, beta)[3][c]
     end
 end
 
@@ -50,9 +70,15 @@ end
             second_derivative_theta(OnePL, 0.0, 0.1, 1) .≈
             second_derivative_theta(OnePL, 0.0, beta, 1),
         )
+
+        @test derivative_theta(OnePL, 0.0, 0.1)[1] == derivative_theta(OnePL, 0.0, beta)[1]
+        @test derivative_theta(OnePL, 0.0, 0.1)[2] == derivative_theta(OnePL, 0.0, beta)[2]
     end
 
     @testset "GPCM" begin
+        beta = (a = 1.3, b = 0.0, t = (0.2, -0.2))
+        test_derivatives(GPCM, beta)
+
         # equivalency to 2PL
         beta_poly = (a = 1.2, b = 0.0, t = (-0.2))
         beta_dich = (a = 1.2, b = 0.2)
@@ -71,5 +97,20 @@ end
 
         @test all(derivs_gpcm[1] .≈ derivs2_gpcm[1])  # probs
         @test all(derivs_gpcm[2] .≈ derivs2_gpcm[2])  # derivs
+    end
+
+    @testset "PCM" begin
+        beta = (a = 0.23, b = 1.48, t = randn(3))
+        test_derivatives(PCM, beta)
+    end
+
+    @testset "GRSM" begin
+        beta = (a = 0.23, b = 1.48, t = randn(3))
+        test_derivatives(GRSM, beta)
+    end
+
+    @testset "RSM" begin
+        beta = (a = 0.23, b = 1.48, t = randn(3))
+        test_derivatives(RSM, beta)
     end
 end
