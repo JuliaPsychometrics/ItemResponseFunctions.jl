@@ -126,7 +126,7 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     checkpars(M, pars)
 
     @unpack t = beta
-    probs = similar(t, length(t) + 1)
+    probs = zeros(length(t) + 1)
 
     return _irf!(M, probs, theta, pars)
 end
