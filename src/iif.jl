@@ -44,23 +44,36 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -0.2, c = 0.15, d = 0.9))
 """
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
-    return _iif(M, theta, beta, y)
+    return _iif(M, theta, beta, y; scoring_function = one)
 end
 
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     info = zeros(2)
-    return _iif!(M, info, theta, beta)
+    return _iif!(M, info, theta, beta; scoring_function = one)
 end
 
-function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y)
+function _iif(
+    M::Type{<:DichotomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F,
+) where {F}
+    prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y; scoring_function)
     prob == 0.0 && return 0.0  # early return to avoid NaNs
-    return deriv^2 / prob - deriv2
+    info = deriv^2 / prob - deriv2
+    return info
 end
 
-function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
-    info[1] = _iif(M, theta, beta, 0)
-    info[2] = _iif(M, theta, beta, 1)
+function _iif!(
+    M::Type{<:DichotomousItemResponseModel},
+    info,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
+    info[1] = _iif(M, theta, beta, 0; scoring_function)
+    info[2] = _iif(M, theta, beta, 1; scoring_function)
     return info
 end
 
@@ -142,7 +155,18 @@ julia> infos
 ```
 """
 function iif!(
-    M::Type{<:ItemResponseModel},
+    M::Type{<:DichotomousItemResponseModel},
+    infos,
+    theta,
+    beta;
+    scoring_function::F = one,
+) where {F}
+    pars = merge_pars(M, beta)
+    return _iif!(M, infos, theta, pars; scoring_function)
+end
+
+function iif!(
+    M::Type{<:PolytomousItemResponseModel},
     infos,
     theta,
     beta;
