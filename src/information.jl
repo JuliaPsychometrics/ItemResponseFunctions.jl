@@ -89,6 +89,24 @@ function information(
     return info
 end
 
+# for models with non-item specific thresholds vector holding category probabilities can be
+# pre-allocated
+function information(
+    M::Type{<:Union{RSM,GRSM}},
+    theta::T,
+    betas::AbstractVector;
+    scoring_function::F = identity,
+) where {T<:Real,F}
+    info = zero(T)
+    infos = zeros(T, length(first(betas).t) + 1)
+
+    for beta in betas
+        info += _information!(M, infos, theta, beta; scoring_function)
+    end
+
+    return info
+end
+
 function information(
     M::Type{<:PolytomousItemResponseModel},
     theta::T,
