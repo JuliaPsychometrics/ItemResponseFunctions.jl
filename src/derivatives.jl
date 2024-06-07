@@ -233,15 +233,14 @@ function _second_derivative_theta!(
     scoring_function::F,
 ) where {F}
     @unpack a, b, t = beta
-    _derivative_theta!(M, probs, derivs, theta, beta; scoring_function)
+    score = _expected_score!(M, probs, theta, beta)
+    score2 = sum(c^2 * probs[c] for c in eachindex(probs))
 
-    categories = eachindex(probs)
-    probsum = sum(c * probs[c] for c in categories)
-    probsum2 = sum(c^2 * probs[c] for c in categories)
+    _irf!(M, probs, theta, beta; scoring_function)
 
-    for c in categories
-        derivs[c] = a * probs[c] * (c - probsum)
-        derivs2[c] = a^2 * probs[c] * (c^2 - 2 * c * probsum + 2 * probsum^2 - probsum2)
+    for c in eachindex(probs)
+        derivs[c] = a * probs[c] * (c - score)
+        derivs2[c] = a^2 * probs[c] * (c^2 - 2 * c * score + 2 * score^2 - score2)
     end
 
     return probs, derivs, derivs2
