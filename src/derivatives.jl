@@ -17,6 +17,11 @@ function derivative_theta!(
     return _derivative_theta!(M, probs, derivs, theta, pars; scoring_function)
 end
 
+abstract type GPCMAutodiff <: PolytomousItemResponseModel end
+export GPCMAutodiff
+
+has_discrimination(::Type{GPCMAutodiff}) = true
+
 function _derivative_theta!(
     M::Type{<:ItemResponseModel},
     probs,
@@ -48,15 +53,20 @@ end
 
 const PolyModelsWithDeriv = Union{GPCM,PCM,GRSM,RSM}
 
-function _derivative_theta!(M::Type{<:PolyModelsWithDeriv}, probs, derivs, theta, beta)
+function _derivative_theta!(
+    M::Type{<:PolyModelsWithDeriv},
+    probs,
+    derivs,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
     @unpack a, b, t = beta
-    _irf!(M, probs, theta, beta)
+    score = _expected_score!(M, probs, theta, beta)
+    _irf!(M, probs, theta, beta; scoring_function)
 
-    categories = eachindex(probs)
-    probsum = sum(c * probs[c] for c in categories)
-
-    for c in categories
-        derivs[c] = a * probs[c] * (c - probsum)
+    for c in eachindex(probs)
+        derivs[c] = a * probs[c] * (c - score)
     end
 
     return probs, derivs
@@ -94,8 +104,14 @@ function derivative_theta(
     return derivative_theta(M, theta, pars; scoring_function)
 end
 
-function derivative_theta(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
-    probs, derivs = derivative_theta(M, theta, beta)
+function derivative_theta(
+    M::Type{<:PolytomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F = one,
+) where {F}
+    probs, derivs = derivative_theta(M, theta, beta; scoring_function)
     return probs[y], derivs[y]
 end
 
@@ -154,7 +170,7 @@ If `y` is omitted, returns values and derivatives for all possible responses.
 This function overwrites `probs`, `derivs` and `derivs2` with the respective values.
 """
 function second_derivative_theta!(
-    M,
+    M::Type{<:ItemResponseModel},
     probs,
     derivs,
     derivs2,
@@ -213,10 +229,11 @@ function _second_derivative_theta!(
     derivs,
     derivs2,
     theta,
-    beta,
-)
+    beta;
+    scoring_function::F,
+) where {F}
     @unpack a, b, t = beta
-    _derivative_theta!(M, probs, derivs, theta, beta)
+    _derivative_theta!(M, probs, derivs, theta, beta; scoring_function)
 
     categories = eachindex(probs)
     probsum = sum(c * probs[c] for c in categories)

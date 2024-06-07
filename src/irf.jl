@@ -140,16 +140,28 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     @unpack t = beta
     probs = zeros(length(t) + 1)
 
-    return _irf!(M, probs, theta, pars)
+    return _irf!(M, probs, theta, pars, scoring_function = one)
 end
 
-function _irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
+function _irf!(
+    M::Type{<:PolytomousItemResponseModel},
+    probs,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
     checkpars(M, beta)
     @unpack a, b, t = beta
     probs[1] = 0.0
     @. probs[2:end] = a * (theta - b + t)
     cumsum!(probs, probs)
     softmax!(probs, probs)
+
+    # response scoring
+    for c in eachindex(probs)
+        probs[c] *= scoring_function(c)
+    end
+
     return probs
 end
 
@@ -181,7 +193,13 @@ julia> probs
  0.13454527815807202
 ```
 """
-function irf!(M::Type{<:ItemResponseModel}, probs, theta, beta)
+function irf!(
+    M::Type{<:ItemResponseModel},
+    probs,
+    theta,
+    beta;
+    scoring_function::F = one,
+) where {F}
     pars = merge_pars(M, beta)
-    return _irf!(M, probs, theta, pars)
+    return _irf!(M, probs, theta, pars; scoring_function)
 end

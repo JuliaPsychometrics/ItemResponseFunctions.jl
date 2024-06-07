@@ -108,13 +108,13 @@ function _iif!(
     infos,
     theta,
     beta;
-    scoring_function::F = identity,
+    scoring_function::F,
 ) where {F}
     checkpars(M, beta)
     @unpack a = beta
 
     # reuse infos array to temporarily store probabilities
-    _irf!(M, infos, theta, beta)
+    _irf!(M, infos, theta, beta; scoring_function = one)
 
     # TODO: should probably just reuse derivative functions
     categories = eachindex(infos)
