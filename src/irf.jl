@@ -18,7 +18,7 @@ julia> irf(OnePL, 0.0, (; b = 0.5), 1)
 julia> irf(OnePL, 0.0, 0.5)
 2-element Vector{Float64}:
  0.6224593312018545
- 0.3775406687981455
+ 0.37754066879814546
 ```
 
 ### 2 Parameter Logistic Model

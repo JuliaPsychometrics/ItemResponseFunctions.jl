@@ -132,15 +132,15 @@ julia> infos = zeros(length(beta.t) + 1);
 
 julia> iif!(GPCM, infos, 0.0, beta)
 3-element Vector{Float64}:
- 0.019962114838441715
+ 0.019962114838441732
  0.020570051742573044
- 0.01718155146775979
+ 0.0171815514677598
 
 julia> infos
 3-element Vector{Float64}:
- 0.019962114838441715
+ 0.019962114838441732
  0.020570051742573044
- 0.01718155146775979
+ 0.0171815514677598
 ```
 """
 function iif!(M::Type{<:ItemResponseModel}, infos, theta, beta)
