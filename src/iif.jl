@@ -78,29 +78,18 @@ function _iif!(
 end
 
 # polytomous models
-function iif(
-    M::Type{<:PolytomousItemResponseModel},
-    theta,
-    beta,
-    y;
-    scoring_function::F = identity,
-) where {F}
+function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
     pars = merge_pars(M, beta)
-    return iif(M, theta, pars; scoring_function)[y]
+    return iif(M, theta, pars)[y]
 end
 
-function iif(
-    M::Type{<:PolytomousItemResponseModel},
-    theta,
-    beta;
-    scoring_function::F = identity,
-) where {F}
+function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     pars = merge_pars(M, beta)
     checkpars(M, pars)
 
     infos = zeros(length(beta.t) + 1)
 
-    return _iif!(M, infos, theta, pars; scoring_function)
+    return _iif!(M, infos, theta, pars; scoring_function = one)
 end
 
 function _iif!(
@@ -113,16 +102,16 @@ function _iif!(
     checkpars(M, beta)
     @unpack a = beta
 
-    # reuse infos array to temporarily store probabilities
-    _irf!(M, infos, theta, beta; scoring_function = one)
+    derivs = similar(infos)
+    derivs2 = similar(infos)
+    second_derivative_theta!(M, infos, derivs, derivs2, theta, beta; scoring_function)
 
-    # TODO: should probably just reuse derivative functions
-    categories = eachindex(infos)
-    probsum = sum(scoring_function(c)^2 * infos[c] for c in categories)
-    probsum2 = sum(scoring_function(c) * infos[c] for c in categories)
-
-    for k in eachindex(infos)
-        infos[k] *= a^2 * (probsum - probsum2^2)
+    for c in eachindex(infos)
+        if iszero(derivs[c])
+            infos[c] = 0.0
+        else
+            infos[c] = derivs[c]^2 / infos[c] - derivs2[c]
+        end
     end
 
     return infos
@@ -154,24 +143,7 @@ julia> infos
  0.01718155146775979
 ```
 """
-function iif!(
-    M::Type{<:DichotomousItemResponseModel},
-    infos,
-    theta,
-    beta;
-    scoring_function::F = one,
-) where {F}
+function iif!(M::Type{<:ItemResponseModel}, infos, theta, beta)
     pars = merge_pars(M, beta)
-    return _iif!(M, infos, theta, pars; scoring_function)
-end
-
-function iif!(
-    M::Type{<:PolytomousItemResponseModel},
-    infos,
-    theta,
-    beta;
-    scoring_function::F = identity,
-) where {F}
-    pars = merge_pars(M, beta)
-    return _iif!(M, infos, theta, pars; scoring_function)
+    return _iif!(M, infos, theta, pars; scoring_function = one)
 end

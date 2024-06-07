@@ -80,7 +80,7 @@ function information(
     M::Type{<:PolytomousItemResponseModel},
     theta,
     betas::AbstractVector;
-    scoring_function::F = identity,
+    scoring_function::F = one,
 ) where {F}
     info = zero(theta)
     for beta in betas
@@ -95,7 +95,7 @@ function information(
     M::Type{<:Union{RSM,GRSM}},
     theta::T,
     betas::AbstractVector;
-    scoring_function::F = identity,
+    scoring_function::F = one,
 ) where {T<:Real,F}
     info = zero(T)
     infos = zeros(T, length(first(betas).t) + 1)
@@ -111,7 +111,7 @@ function information(
     M::Type{<:PolytomousItemResponseModel},
     theta::T,
     beta::NamedTuple;
-    scoring_function::F = identity,
+    scoring_function::F = one,
 ) where {T<:Real,F}
     infos = zeros(T, length(beta.t) + 1)
     return _information!(M, infos, theta, beta; scoring_function)
@@ -122,8 +122,9 @@ function _information!(
     infos,
     theta,
     beta::NamedTuple;
-    scoring_function::F = identity,
+    scoring_function::F,
 ) where {F}
-    iif!(M, infos, theta, beta; scoring_function)
+    pars = merge_pars(M, beta)
+    _iif!(M, infos, theta, pars; scoring_function)
     return sum(infos)
 end
