@@ -17,11 +17,6 @@ function derivative_theta!(
     return _derivative_theta!(M, probs, derivs, theta, pars; scoring_function)
 end
 
-abstract type GPCMAutodiff <: PolytomousItemResponseModel end
-export GPCMAutodiff
-
-has_discrimination(::Type{GPCMAutodiff}) = true
-
 function _derivative_theta!(
     M::Type{<:ItemResponseModel},
     probs,
