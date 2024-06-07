@@ -54,8 +54,7 @@
         # equivalent to 1PL for dichotomous items
         beta = (a = 1.4, b = 0.3, t = 0.0)
         betas = fill(beta, 4)
-        @test information(PCM, 0.0, betas, scoring_function = partial_credit(2)) ≈
-              information(OnePL, 0.0, betas)
+        @test information(PCM, 0.0, betas) ≈ information(OnePL, 0.0, betas)
     end
 
 end

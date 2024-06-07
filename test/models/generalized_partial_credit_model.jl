@@ -62,8 +62,9 @@
 
         # equivalent to 2PL for dichotomous items
         beta = (a = 0.3, b = 0.4, t = 0.0)
+        @test information(GPCM, 0.0, beta) ≈ information(TwoPL, 0.0, beta)
+
         betas = fill(beta, 4)
-        @test information(GPCM, 0.0, betas, scoring_function = partial_credit(2)) ≈
-              information(TwoPL, 0.0, betas)
+        @test information(GPCM, 0.0, betas) ≈ information(TwoPL, 0.0, betas)
     end
 end

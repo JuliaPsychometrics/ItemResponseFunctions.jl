@@ -44,11 +44,16 @@ julia> information(FourPL, 0.0, betas)
 0.20178122985757524
 ```
 """
-function information(M::Type{<:ItemResponseModel}, theta, betas::AbstractVector)
+function information(
+    M::Type{<:DichotomousItemResponseModel},
+    theta,
+    betas::AbstractVector;
+    scoring_function::F = one,
+) where {F}
     info = zero(theta)
 
     for beta in betas
-        info += information(M, theta, beta)
+        info += information(M, theta, beta; scoring_function)
     end
 
     return info
@@ -57,47 +62,69 @@ end
 function information(
     M::Type{<:DichotomousItemResponseModel},
     theta,
-    beta::Union{<:Real,NamedTuple},
-)
+    beta::Union{<:Real,NamedTuple};
+    scoring_function::F = one,
+) where {F}
     info = zero(theta)
+    pars = merge_pars(M, beta)
 
     for y in 0:1
-        info += iif(M, theta, beta, y)
+        info += _iif(M, theta, pars, y; scoring_function)
     end
 
     return info
 end
 
+# polytomous models
 function information(
     M::Type{<:PolytomousItemResponseModel},
-    theta::T,
-    beta::NamedTuple;
-    scoring_function::F = identity,
-) where {T<:Real,F}
-    infos = zeros(T, length(beta.t) + 1)
-    return _information(M, infos, theta, beta; scoring_function)
-end
-
-function _information(
-    M::Type{<:PolytomousItemResponseModel},
-    infos,
     theta,
-    beta::NamedTuple;
-    scoring_function::F = identity,
-) where {F}
-    iif!(M, infos, theta, beta; scoring_function)
-    return sum(infos)
-end
-
-function information(
-    M::Type{<:PolytomousItemResponseModel},
-    theta::T,
     betas::AbstractVector;
-    scoring_function::F = identity,
-) where {T<:Real,F}
-    info = zero(T)
+    scoring_function::F = one,
+) where {F}
+    info = zero(theta)
     for beta in betas
         info += information(M, theta, beta; scoring_function)
     end
     return info
+end
+
+# for models with non-item specific thresholds vector holding category probabilities can be
+# pre-allocated
+function information(
+    M::Type{<:Union{RSM,GRSM}},
+    theta::T,
+    betas::AbstractVector;
+    scoring_function::F = one,
+) where {T<:Real,F}
+    info = zero(T)
+    infos = zeros(T, length(first(betas).t) + 1)
+
+    for beta in betas
+        info += _information!(M, infos, theta, beta; scoring_function)
+    end
+
+    return info
+end
+
+function information(
+    M::Type{<:PolytomousItemResponseModel},
+    theta::T,
+    beta::NamedTuple;
+    scoring_function::F = one,
+) where {T<:Real,F}
+    infos = zeros(T, length(beta.t) + 1)
+    return _information!(M, infos, theta, beta; scoring_function)
+end
+
+function _information!(
+    M::Type{<:PolytomousItemResponseModel},
+    infos,
+    theta,
+    beta::NamedTuple;
+    scoring_function::F,
+) where {F}
+    pars = merge_pars(M, beta)
+    _iif!(M, infos, theta, pars; scoring_function)
+    return sum(infos)
 end

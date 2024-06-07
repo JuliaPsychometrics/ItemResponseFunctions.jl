@@ -44,50 +44,52 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -0.2, c = 0.15, d = 0.9))
 """
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
-    return _iif(M, theta, beta, y)
+    return _iif(M, theta, beta, y; scoring_function = one)
 end
 
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     info = zeros(2)
-    return _iif!(M, info, theta, beta)
+    return _iif!(M, info, theta, beta; scoring_function = one)
 end
 
-function _iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y)
+function _iif(
+    M::Type{<:DichotomousItemResponseModel},
+    theta,
+    beta,
+    y;
+    scoring_function::F,
+) where {F}
+    prob, deriv, deriv2 = second_derivative_theta(M, theta, beta, y; scoring_function)
     prob == 0.0 && return 0.0  # early return to avoid NaNs
-    return deriv^2 / prob - deriv2
+    info = deriv^2 / prob - deriv2
+    return info
 end
 
-function _iif!(M::Type{<:DichotomousItemResponseModel}, info, theta, beta)
-    info[1] = _iif(M, theta, beta, 0)
-    info[2] = _iif(M, theta, beta, 1)
+function _iif!(
+    M::Type{<:DichotomousItemResponseModel},
+    info,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
+    info[1] = _iif(M, theta, beta, 0; scoring_function)
+    info[2] = _iif(M, theta, beta, 1; scoring_function)
     return info
 end
 
 # polytomous models
-function iif(
-    M::Type{<:PolytomousItemResponseModel},
-    theta,
-    beta,
-    y;
-    scoring_function::F = identity,
-) where {F}
+function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
     pars = merge_pars(M, beta)
-    return iif(M, theta, pars; scoring_function)[y]
+    return iif(M, theta, pars)[y]
 end
 
-function iif(
-    M::Type{<:PolytomousItemResponseModel},
-    theta,
-    beta;
-    scoring_function::F = identity,
-) where {F}
+function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     pars = merge_pars(M, beta)
     checkpars(M, pars)
 
     infos = zeros(length(beta.t) + 1)
 
-    return _iif!(M, infos, theta, pars; scoring_function)
+    return _iif!(M, infos, theta, pars; scoring_function = one)
 end
 
 function _iif!(
@@ -95,21 +97,21 @@ function _iif!(
     infos,
     theta,
     beta;
-    scoring_function::F = identity,
+    scoring_function::F,
 ) where {F}
     checkpars(M, beta)
     @unpack a = beta
 
-    # reuse infos array to temporarily store probabilities
-    _irf!(M, infos, theta, beta)
+    derivs = similar(infos)
+    derivs2 = similar(infos)
+    second_derivative_theta!(M, infos, derivs, derivs2, theta, beta; scoring_function)
 
-    # TODO: should probably just reuse derivative functions
-    categories = eachindex(infos)
-    probsum = sum(scoring_function(c)^2 * infos[c] for c in categories)
-    probsum2 = sum(scoring_function(c) * infos[c] for c in categories)
-
-    for k in eachindex(infos)
-        infos[k] *= a^2 * (probsum - probsum2^2)
+    for c in eachindex(infos)
+        if iszero(derivs[c])
+            infos[c] = 0.0
+        else
+            infos[c] = derivs[c]^2 / infos[c] - derivs2[c]
+        end
     end
 
     return infos
@@ -130,24 +132,18 @@ julia> infos = zeros(length(beta.t) + 1);
 
 julia> iif!(GPCM, infos, 0.0, beta)
 3-element Vector{Float64}:
- 0.019962114838441715
+ 0.019962114838441732
  0.020570051742573044
- 0.01718155146775979
+ 0.0171815514677598
 
 julia> infos
 3-element Vector{Float64}:
- 0.019962114838441715
+ 0.019962114838441732
  0.020570051742573044
- 0.01718155146775979
+ 0.0171815514677598
 ```
 """
-function iif!(
-    M::Type{<:ItemResponseModel},
-    infos,
-    theta,
-    beta;
-    scoring_function::F = identity,
-) where {F}
+function iif!(M::Type{<:ItemResponseModel}, infos, theta, beta)
     pars = merge_pars(M, beta)
-    return _iif!(M, infos, theta, pars; scoring_function)
+    return _iif!(M, infos, theta, pars; scoring_function = one)
 end

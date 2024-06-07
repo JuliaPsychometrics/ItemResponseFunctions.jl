@@ -18,7 +18,7 @@ julia> irf(OnePL, 0.0, (; b = 0.5), 1)
 julia> irf(OnePL, 0.0, 0.5)
 2-element Vector{Float64}:
  0.6224593312018545
- 0.3775406687981455
+ 0.37754066879814546
 ```
 
 ### 2 Parameter Logistic Model
@@ -92,26 +92,38 @@ julia> irf(RSM, 0.0, beta, 3)
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
     pars = merge_pars(M, beta)
-    return _irf(M, theta, pars, y)
+    return _irf(M, theta, pars, y; scoring_function = one)
 end
 
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta)
     pars = merge_pars(M, beta)
     probs = zeros(2)
-    return _irf!(M, probs, theta, pars)
+    return _irf!(M, probs, theta, pars; scoring_function = one)
 end
 
-function _irf(M::Type{<:DichotomousItemResponseModel}, theta::Real, beta, y)
+function _irf(
+    M::Type{<:DichotomousItemResponseModel},
+    theta::Real,
+    beta,
+    y;
+    scoring_function::F,
+) where {F}
     checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
-    res = ifelse(y == 1, prob, 1 - prob)
+    res = ifelse(y == 1, prob, 1 - prob) * scoring_function(y)
     return res
 end
 
-function _irf!(M::Type{<:DichotomousItemResponseModel}, probs, theta, beta)
-    probs[1] = _irf(M, theta, beta, 0)
-    probs[2] = 1 - probs[1]
+function _irf!(
+    M::Type{<:DichotomousItemResponseModel},
+    probs,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
+    probs[1] = _irf(M, theta, beta, 0; scoring_function)
+    probs[2] = _irf(M, theta, beta, 1; scoring_function)
     return probs
 end
 
@@ -128,16 +140,28 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
     @unpack t = beta
     probs = zeros(length(t) + 1)
 
-    return _irf!(M, probs, theta, pars)
+    return _irf!(M, probs, theta, pars, scoring_function = one)
 end
 
-function _irf!(M::Type{<:PolytomousItemResponseModel}, probs, theta, beta)
+function _irf!(
+    M::Type{<:PolytomousItemResponseModel},
+    probs,
+    theta,
+    beta;
+    scoring_function::F,
+) where {F}
     checkpars(M, beta)
     @unpack a, b, t = beta
     probs[1] = 0.0
     @. probs[2:end] = a * (theta - b + t)
     cumsum!(probs, probs)
     softmax!(probs, probs)
+
+    # response scoring
+    for c in eachindex(probs)
+        probs[c] *= scoring_function(c)
+    end
+
     return probs
 end
 
@@ -169,7 +193,13 @@ julia> probs
  0.13454527815807202
 ```
 """
-function irf!(M::Type{<:ItemResponseModel}, probs, theta, beta)
+function irf!(
+    M::Type{<:ItemResponseModel},
+    probs,
+    theta,
+    beta;
+    scoring_function::F = one,
+) where {F}
     pars = merge_pars(M, beta)
-    return _irf!(M, probs, theta, pars)
+    return _irf!(M, probs, theta, pars; scoring_function)
 end

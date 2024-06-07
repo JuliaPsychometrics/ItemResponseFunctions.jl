@@ -1,36 +1,45 @@
 import ForwardDiff
 
+scoring_functions =
+    [one, zero, identity, x -> 1 + x, x -> 1 + 10x, x -> ifelse(x == 0, -1, 1)]
+
 function test_derivatives(M::Type{<:DichotomousItemResponseModel}, beta)
     theta = rand()
 
-    for y in 0:1
-        # equivalency to 5PL
-        @test derivative_theta(M, theta, beta, y)[1] ≈
-              derivative_theta(FivePL, theta, beta, y)[1]
-        @test derivative_theta(M, theta, beta, y)[2] ≈
-              derivative_theta(FivePL, theta, beta, y)[2]
+    for scoring_function in scoring_functions
+        for y in 0:1
+            # equivalency to 5PL
+            @test derivative_theta(M, theta, beta, y; scoring_function)[1] ≈
+                  derivative_theta(FivePL, theta, beta, y; scoring_function)[1]
+            @test derivative_theta(M, theta, beta, y; scoring_function)[2] ≈
+                  derivative_theta(FivePL, theta, beta, y; scoring_function)[2]
 
-        @test second_derivative_theta(M, theta, beta, y)[1] ≈
-              second_derivative_theta(FivePL, theta, beta, y)[1]
-        @test second_derivative_theta(M, theta, beta, y)[2] ≈
-              second_derivative_theta(FivePL, theta, beta, y)[2]
-        @test second_derivative_theta(M, theta, beta, y)[3] ≈
-              second_derivative_theta(FivePL, theta, beta, y)[3]
+            @test second_derivative_theta(M, theta, beta, y)[1] ≈
+                  second_derivative_theta(FivePL, theta, beta, y)[1]
+            @test second_derivative_theta(M, theta, beta, y)[2] ≈
+                  second_derivative_theta(FivePL, theta, beta, y)[2]
+            @test second_derivative_theta(M, theta, beta, y)[3] ≈
+                  second_derivative_theta(FivePL, theta, beta, y)[3]
 
-        # equivalency of methods
-        @test derivative_theta(M, theta, beta, y)[1] ≈
-              derivative_theta(M, theta, beta)[1][y+1]
-        @test derivative_theta(M, theta, beta, y)[2] ≈
-              derivative_theta(M, theta, beta)[2][y+1]
+            # equivalency of methods
+            @test derivative_theta(M, theta, beta, y; scoring_function)[1] ≈
+                  derivative_theta(M, theta, beta; scoring_function)[1][y+1]
+            @test derivative_theta(M, theta, beta, y; scoring_function)[2] ≈
+                  derivative_theta(M, theta, beta; scoring_function)[2][y+1]
 
-        @test second_derivative_theta(M, theta, beta, y)[1] ≈
-              second_derivative_theta(M, theta, beta)[1][y+1]
-        @test second_derivative_theta(M, theta, beta, y)[2] ≈
-              second_derivative_theta(M, theta, beta)[2][y+1]
-        @test second_derivative_theta(M, theta, beta, y)[3] ≈
-              second_derivative_theta(M, theta, beta)[3][y+1]
+            @test second_derivative_theta(M, theta, beta, y)[1] ≈
+                  second_derivative_theta(M, theta, beta)[1][y+1]
+            @test second_derivative_theta(M, theta, beta, y)[2] ≈
+                  second_derivative_theta(M, theta, beta)[2][y+1]
+            @test second_derivative_theta(M, theta, beta, y)[3] ≈
+                  second_derivative_theta(M, theta, beta)[3][y+1]
+        end
     end
 end
+
+abstract type GPCMAutodiff <: PolytomousItemResponseModel end
+export GPCMAutodiff
+ItemResponseFunctions.has_discrimination(::Type{GPCMAutodiff}) = true
 
 function test_derivatives(M::Type{<:PolytomousItemResponseModel}, beta)
     theta = rand()
@@ -38,6 +47,12 @@ function test_derivatives(M::Type{<:PolytomousItemResponseModel}, beta)
     categories = 1:(length(beta.t)+1)
 
     for c in categories
+        # equivalent to autodiff
+        @test derivative_theta(M, theta, beta, c)[1] ≈
+              derivative_theta(GPCMAutodiff, theta, beta, c)[1]
+        @test derivative_theta(M, theta, beta, c)[2] ≈
+              derivative_theta(GPCMAutodiff, theta, beta, c)[2]
+
         # equivalency of methods
         @test derivative_theta(M, theta, beta, c)[1] ≈
               derivative_theta(M, theta, beta)[1][c]
@@ -104,29 +119,10 @@ end
     @testset "GPCM" begin
         beta = (a = 1.3, b = 0.0, t = (0.2, -0.2))
         test_derivatives(GPCM, beta)
-
-        # equivalency to 2PL
-        beta_poly = (a = 1.2, b = 0.0, t = (-0.2))
-        beta_dich = (a = 1.2, b = 0.2)
-
-        derivs_2pl = derivative_theta(TwoPL, 0.0, beta_dich)
-        derivs_gpcm = derivative_theta(GPCM, 0.0, beta_poly)
-        @test all(derivs_2pl[1] .≈ derivs_gpcm[1])  # probs
-        @test all(derivs_2pl[2] .≈ derivs_gpcm[2])  # derivs
-
-        derivs2_2pl = second_derivative_theta(TwoPL, 0.0, beta_dich)
-        derivs2_gpcm = second_derivative_theta(GPCM, 0.0, beta_poly)
-
-        @test all(derivs2_2pl[1] .≈ derivs2_gpcm[1])  # probs
-        @test all(derivs2_2pl[2] .≈ derivs2_gpcm[2])  # derivs
-        @test all(derivs2_2pl[3] .≈ derivs2_gpcm[3])  # second derivs
-
-        @test all(derivs_gpcm[1] .≈ derivs2_gpcm[1])  # probs
-        @test all(derivs_gpcm[2] .≈ derivs2_gpcm[2])  # derivs
     end
 
     @testset "PCM" begin
-        beta = (a = 0.23, b = 1.48, t = randn(3))
+        beta = (a = 1.0, b = 1.48, t = randn(3))
         test_derivatives(PCM, beta)
     end
 
@@ -136,7 +132,7 @@ end
     end
 
     @testset "RSM" begin
-        beta = (a = 0.23, b = 1.48, t = randn(3))
+        beta = (a = 1.0, b = 1.48, t = randn(3))
         test_derivatives(RSM, beta)
     end
 end
