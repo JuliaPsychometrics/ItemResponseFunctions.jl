@@ -5,21 +5,22 @@ Append parameters to `beta` based on `M`s traits.
 """
 function merge_pars(M::Type{<:ItemResponseModel}, beta)
     pars = deepcopy(beta)
+    @unpack b = pars
 
     if !has_discrimination(M)
-        pars = merge(pars, (; a = 1.0))
+        pars = merge(pars, (; a = one(b)))
     end
 
     if !has_lower_asymptote(M)
-        pars = merge(pars, (; c = 0.0))
+        pars = merge(pars, (; c = zero(b)))
     end
 
     if !has_upper_asymptote(M)
-        pars = merge(pars, (; d = 1.0))
+        pars = merge(pars, (; d = one(b)))
     end
 
     if !has_stiffness(M)
-        pars = merge(pars, (; e = 1.0))
+        pars = merge(pars, (; e = one(b)))
     end
 
     return pars
