@@ -117,8 +117,7 @@ function derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    @show "autodiff"
-    @show pars = ItemParameters(M, beta)
+    pars = ItemParameters(M, beta)
     f = x -> irf(M, x, pars, y) * scoring_function(y)
     prob, deriv = value_and_derivative(f, AutoForwardDiff(), theta)
     return prob, deriv
@@ -131,8 +130,7 @@ function derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    @show "analytic"
-    @show pars = ItemParameters(M, beta)
+    pars = ItemParameters(M, beta)
     return _derivative_theta(M, theta, pars, y; scoring_function)
 end
 

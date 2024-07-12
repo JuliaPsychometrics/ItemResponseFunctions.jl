@@ -30,7 +30,11 @@ function ItemParameters(M; b, a = one(b), c = zero(b), d = one(b), e = one(b), t
     return ItemParameters(M, beta..., Tuple(t))
 end
 
-ItemParameters(M::Type{<:ItemResponseModel}, beta::ItemParameters) = beta
+function ItemParameters(M::Type{<:ItemResponseModel}, beta::ItemParameters)
+    @unpack a, b, c, d, e, t = beta
+    return ItemParameters(M, a, b, c, d, e, t)
+end
+
 ItemParameters(M::Type{<:ItemResponseModel}, beta::NamedTuple) = ItemParameters(M; beta...)
 ItemParameters(M::Type{<:ItemResponseModel}, beta::Real) = ItemParameters(M; b = beta)
 
