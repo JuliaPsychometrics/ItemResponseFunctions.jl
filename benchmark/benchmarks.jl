@@ -1,6 +1,8 @@
 using BenchmarkTools
 using ItemResponseFunctions
 
+const SUITE = BenchmarkGroup()
+
 SUITE["OnePL"] = BenchmarkGroup()
 
 SUITE["OnePL"]["irf"] = @benchmarkable(
