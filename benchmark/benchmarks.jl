@@ -34,14 +34,14 @@ for model in models
     )
 
     SUITE[m]["expected_score"] = @benchmarkable(
-        expected_score($model, theta, betas, $1),
+        expected_score($model, theta, betas),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); betas = [make_pars() for _ in 1:20])
     )
 
     SUITE[m]["information"] = @benchmarkable(
-        information($model, theta, betas, $1),
+        information($model, theta, betas),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); betas = [make_pars() for _ in 1:20])
