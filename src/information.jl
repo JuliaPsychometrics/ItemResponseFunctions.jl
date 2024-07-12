@@ -62,11 +62,11 @@ end
 function information(
     M::Type{<:DichotomousItemResponseModel},
     theta,
-    beta::Union{<:Real,NamedTuple};
+    beta::Union{<:Real,NamedTuple,ItemParameters};
     scoring_function::F = one,
 ) where {F}
     info = zero(theta)
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
 
     for y in 0:1
         info += _iif(M, theta, pars, y; scoring_function)
@@ -110,7 +110,7 @@ end
 function information(
     M::Type{<:PolytomousItemResponseModel},
     theta::T,
-    beta::NamedTuple;
+    beta::Union{NamedTuple,ItemParameters};
     scoring_function::F = one,
 ) where {T<:Real,F}
     infos = zeros(T, length(beta.t) + 1)
@@ -121,10 +121,10 @@ function _information!(
     M::Type{<:PolytomousItemResponseModel},
     infos,
     theta,
-    beta::NamedTuple;
+    beta::Union{NamedTuple,ItemParameters};
     scoring_function::F,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     _iif!(M, infos, theta, pars; scoring_function)
     return sum(infos)
 end

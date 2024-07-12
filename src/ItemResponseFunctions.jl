@@ -25,6 +25,7 @@ export DichotomousItemResponseModel,
     GRSM,
     GeneralizedPartialCreditModel,
     GeneralizedRatingScaleModel,
+    ItemParameters,
     OnePL,
     OnePLG,
     OneParameterLogisticModel,
@@ -47,6 +48,8 @@ export DichotomousItemResponseModel,
     second_derivative_theta!
 
 include("model_types.jl")
+include("item_parameters.jl")
+
 include("utils.jl")
 include("irf.jl")
 include("iif.jl")

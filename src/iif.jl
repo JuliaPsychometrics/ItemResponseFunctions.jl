@@ -79,16 +79,13 @@ end
 
 # polytomous models
 function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return iif(M, theta, pars)[y]
 end
 
 function iif(M::Type{<:PolytomousItemResponseModel}, theta, beta)
-    pars = merge_pars(M, beta)
-    checkpars(M, pars)
-
+    pars = ItemParameters(M, beta)
     infos = zeros(length(beta.t) + 1)
-
     return _iif!(M, infos, theta, pars; scoring_function = one)
 end
 
@@ -99,7 +96,6 @@ function _iif!(
     beta;
     scoring_function::F,
 ) where {F}
-    checkpars(M, beta)
     @unpack a = beta
 
     derivs = similar(infos)
@@ -144,6 +140,6 @@ julia> infos
 ```
 """
 function iif!(M::Type{<:ItemResponseModel}, infos, theta, beta)
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _iif!(M, infos, theta, pars; scoring_function = one)
 end

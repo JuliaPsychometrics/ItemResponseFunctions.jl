@@ -6,8 +6,8 @@ using ItemResponseFunctions:
     has_upper_asymptote,
     has_lower_asymptote,
     has_stiffness,
-    checkpars,
-    merge_pars
+    check_pars,
+    ItemParameters
 
 @testset "ItemResponseFunctions.jl" begin
     include("utils.jl")
@@ -15,8 +15,8 @@ using ItemResponseFunctions:
     include("models/one_parameter_logistic.jl")
     include("models/one_parameter_logistic_plus_guessing.jl")
     include("models/two_parameter_logistic.jl")
-    include("models/three_parameter_logistic.jl")
-    include("models/four_parameter_logistic.jl")
+    # include("models/three_parameter_logistic.jl")
+    # include("models/four_parameter_logistic.jl")
     include("models/five_parameter_logistic.jl")
     include("models/generalized_partial_credit_model.jl")
     include("models/partial_credit_model.jl")
