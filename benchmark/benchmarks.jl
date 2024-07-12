@@ -20,28 +20,28 @@ for model in models
     SUITE[m] = BenchmarkGroup()
 
     SUITE[m]["irf"] = @benchmarkable(
-        irf(model, theta, beta, $1),
+        irf($model, theta, beta, $1),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); beta = make_pars())
     )
 
     SUITE[m]["iif"] = @benchmarkable(
-        iif(model, theta, beta, $1),
+        iif($model, theta, beta, $1),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); beta = make_pars())
     )
 
     SUITE[m]["expected_score"] = @benchmarkable(
-        expected_score(model, theta, betas, $1),
+        expected_score($model, theta, betas, $1),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); betas = [make_pars() for _ in 1:20])
     )
 
     SUITE[m]["information"] = @benchmarkable(
-        information(model, theta, betas, $1),
+        information($model, theta, betas, $1),
         evals = 10,
         samples = 1000,
         setup = (theta = randn(); betas = [make_pars() for _ in 1:20])
