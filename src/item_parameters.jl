@@ -1,12 +1,32 @@
 """
     $(TYPEDEF)
+
+A struct representing item parameters for an item response model.
+
+## Fields
+$(FIELDS)
+
+## Examples
+```jldoctest
+julia> pars = ItemParameters(TwoPL, a = 1.5, b = 0.0)
+ItemParameters{TwoParameterLogisticModel, 0, Float64}(1.5, 0.0, 0.0, 1.0, 1.0, ())
+
+julia> ItemParameters(OnePL, pars)
+ItemParameters{OneParameterLogisticModel, 0, Float64}(1.0, 0.0, 0.0, 1.0, 1.0, ())
+```
 """
 struct ItemParameters{M<:ItemResponseModel,N,T}
+    "the item discrimination"
     a::T
+    "the item difficulty (location)"
     b::T
+    "the lower asymptote"
     c::T
+    "the upper asymptote"
     d::T
+    "the item stiffness"
     e::T
+    "a tuple of threshold parameters"
     t::NTuple{N,T}
     function ItemParameters(M, a, b, c, d, e, t::NTuple{N,T}) where {N,T}
         a = has_discrimination(M) ? a : one(b)

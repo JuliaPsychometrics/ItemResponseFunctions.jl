@@ -45,3 +45,8 @@ derivative_theta!
 second_derivative_theta
 second_derivative_theta!
 ```
+
+#### Item parameters
+```@docs
+ItemParameters
+```
