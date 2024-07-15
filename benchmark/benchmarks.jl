@@ -3,7 +3,7 @@ using ItemResponseFunctions
 
 const SUITE = BenchmarkGroup()
 
-models = [OnePL, TwoPL, ThreePL, FourPL, FivePL]
+models = [OnePL, TwoPL, ThreePL, FourPL, FivePL, PCM, GPCM, RSM, GRSM]
 
 function make_pars(; nthresholds = 3)
     a = rand() * 2

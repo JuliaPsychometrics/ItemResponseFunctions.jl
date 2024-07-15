@@ -15,7 +15,7 @@ julia> ItemParameters(OnePL, pars)
 ItemParameters{OneParameterLogisticModel, 0, Float64}(1.0, 0.0, 0.0, 1.0, 1.0, ())
 ```
 """
-struct ItemParameters{M<:ItemResponseModel,N,T}
+struct ItemParameters{M<:ItemResponseModel,N,T<:Real}
     "the item discrimination"
     a::T
     "the item difficulty (location)"
@@ -28,24 +28,40 @@ struct ItemParameters{M<:ItemResponseModel,N,T}
     e::T
     "a tuple of threshold parameters"
     t::NTuple{N,T}
-    function ItemParameters(M, a, b, c, d, e, t::NTuple{N,T}) where {N,T}
-        a = has_discrimination(M) ? a : one(b)
-        c = has_lower_asymptote(M) ? c : zero(b)
-        d = has_upper_asymptote(M) ? d : one(d)
-        e = has_stiffness(M) ? e : one(b)
-        t = response_type(M) == Dichotomous ? () : t
+    function ItemParameters(
+        model::Type{<:ItemResponseModel},
+        a,
+        b,
+        c,
+        d,
+        e,
+        t::NTuple{N,T},
+    ) where {N,T}
+        a = has_discrimination(model) ? a : one(b)
+        c = has_lower_asymptote(model) ? c : zero(b)
+        d = has_upper_asymptote(model) ? d : one(d)
+        e = has_stiffness(model) ? e : one(b)
 
-        check_discrimination(M, a)
-        check_lower_asymptote(M, c)
-        check_upper_asymptote(M, c, d)
-        check_stiffness(M, e)
+        check_discrimination(model, a)
+        check_lower_asymptote(model, c)
+        check_upper_asymptote(model, c, d)
+        check_stiffness(model, e)
 
         beta = promote(a, b, c, d, e)
-        return new{M,length(t),eltype(beta)}(beta..., t)
+
+        return new{model,N,eltype(beta)}(beta..., t)
     end
 end
 
-function ItemParameters(M; b, a = one(b), c = zero(b), d = one(b), e = one(b), t = ())
+function ItemParameters(
+    M::Type{<:ItemResponseModel};
+    b,
+    a = one(b),
+    c = zero(b),
+    d = one(b),
+    e = one(b),
+    t = (),
+)
     beta = promote(a, b, c, d, e)
     return ItemParameters(M, beta..., Tuple(t))
 end
@@ -78,17 +94,18 @@ function check_pars(M::Type{<:PolytomousItemResponseModel}, beta)
     return true
 end
 
-function check_discrimination(M, a)
+function check_discrimination(M::Type{<:ItemResponseModel}, a)
     if !has_discrimination(M)
         if a != 1
             err = "discrimination parameter a != 1"
             throw(ArgumentError(err))
         end
+    else
+        return true
     end
-    return true
 end
 
-function check_lower_asymptote(M, c)
+function check_lower_asymptote(M::Type{<:ItemResponseModel}, c)
     if has_lower_asymptote(M)
         if c < 0 || c > 1
             err = "lower asymptote c must be in interval (0, 1)"
@@ -103,7 +120,7 @@ function check_lower_asymptote(M, c)
     return true
 end
 
-function check_upper_asymptote(M, c, d)
+function check_upper_asymptote(M::Type{<:ItemResponseModel}, c, d)
     if has_upper_asymptote(M)
         if d < 0 || d > 1
             err = "upper asymptote d must be in interval (0, 1)"
@@ -122,7 +139,7 @@ function check_upper_asymptote(M, c, d)
     end
 end
 
-function check_stiffness(M, e)
+function check_stiffness(M::Type{<:ItemResponseModel}, e)
     if has_stiffness(M)
         if e < 0
             err = "stiffness parameter e must be positive"
