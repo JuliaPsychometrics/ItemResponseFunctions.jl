@@ -6,12 +6,13 @@ using ItemResponseFunctions:
     has_upper_asymptote,
     has_lower_asymptote,
     has_stiffness,
-    checkpars,
-    merge_pars
+    check_pars,
+    ItemParameters
 
 @testset "ItemResponseFunctions.jl" begin
     include("utils.jl")
     include("scoring_functions.jl")
+    include("item_parameters.jl")
     include("models/one_parameter_logistic.jl")
     include("models/one_parameter_logistic_plus_guessing.jl")
     include("models/two_parameter_logistic.jl")

@@ -13,7 +13,7 @@ function derivative_theta!(
     beta;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _derivative_theta!(M, probs, derivs, theta, pars; scoring_function)
 end
 
@@ -95,7 +95,7 @@ function derivative_theta(
     beta::Real;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return derivative_theta(M, theta, pars; scoring_function)
 end
 
@@ -117,7 +117,8 @@ function derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    f = x -> irf(M, x, beta, y) * scoring_function(y)
+    pars = ItemParameters(M, beta)
+    f = x -> irf(M, x, pars, y) * scoring_function(y)
     prob, deriv = value_and_derivative(f, AutoForwardDiff(), theta)
     return prob, deriv
 end
@@ -129,7 +130,7 @@ function derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _derivative_theta(M, theta, pars, y; scoring_function)
 end
 
@@ -173,7 +174,7 @@ function second_derivative_theta!(
     beta;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _second_derivative_theta!(
         M,
         probs,
@@ -278,7 +279,7 @@ function second_derivative_theta(
     beta::Real;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return second_derivative_theta(M, theta, pars; scoring_function)
 end
 
@@ -308,7 +309,7 @@ function second_derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _second_derivative_theta(M, theta, pars, y; scoring_function)
 end
 

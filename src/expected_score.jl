@@ -72,7 +72,7 @@ end
 function expected_score(
     M::Type{<:DichotomousItemResponseModel},
     theta,
-    beta::Union{<:Real,NamedTuple};
+    beta::Union{<:Real,NamedTuple,ItemParameters};
     scoring_function::F = identity,
 ) where {F}
     score = zero(theta)
@@ -96,7 +96,8 @@ function expected_score(
     probs = zeros(T, length(first(betas).t) + 1)
 
     for beta in betas
-        score += _expected_score!(M, probs, theta, beta; scoring_function)
+        pars = ItemParameters(M, beta)
+        score += _expected_score!(M, probs, theta, pars; scoring_function)
     end
 
     return score
@@ -105,18 +106,19 @@ end
 function expected_score(
     M::Type{<:PolytomousItemResponseModel},
     theta::T,
-    beta::NamedTuple;
+    beta::Union{NamedTuple,ItemParameters};
     scoring_function::F = identity,
 ) where {T<:Real,F}
     probs = zeros(T, length(beta.t) + 1)
-    return _expected_score!(M, probs, theta, beta; scoring_function)
+    pars = ItemParameters(M, beta)
+    return _expected_score!(M, probs, theta, pars; scoring_function)
 end
 
 function _expected_score!(
     M::Type{<:PolytomousItemResponseModel},
     probs,
     theta,
-    beta::NamedTuple;
+    beta::ItemParameters;
     scoring_function::F = identity,
 ) where {F}
     score = zero(theta)

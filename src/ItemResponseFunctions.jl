@@ -3,7 +3,7 @@ module ItemResponseFunctions
 using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
 using DifferentiationInterface:
     AutoForwardDiff, derivative!, value_and_derivative, second_derivative
-using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST
+using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST, FIELDS
 using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
 using SimpleUnPack: @unpack
@@ -25,6 +25,7 @@ export DichotomousItemResponseModel,
     GRSM,
     GeneralizedPartialCreditModel,
     GeneralizedRatingScaleModel,
+    ItemParameters,
     OnePL,
     OnePLG,
     OneParameterLogisticModel,
@@ -47,6 +48,7 @@ export DichotomousItemResponseModel,
     second_derivative_theta!
 
 include("model_types.jl")
+include("item_parameters.jl")
 include("utils.jl")
 include("irf.jl")
 include("iif.jl")

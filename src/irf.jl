@@ -91,12 +91,12 @@ julia> irf(RSM, 0.0, beta, 3)
 """
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
     checkresponsetype(response_type(M), y)
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _irf(M, theta, pars, y; scoring_function = one)
 end
 
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta)
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     probs = zeros(2)
     return _irf!(M, probs, theta, pars; scoring_function = one)
 end
@@ -108,7 +108,6 @@ function _irf(
     y;
     scoring_function::F,
 ) where {F}
-    checkpars(M, beta)
     @unpack a, b, c, d, e = beta
     prob = c + (d - c) * logistic(a * (theta - b))^e
     res = ifelse(y == 1, prob, 1 - prob) * scoring_function(y)
@@ -134,12 +133,9 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
 end
 
 function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
-    pars = merge_pars(M, beta)
-    checkpars(M, pars)
-
+    pars = ItemParameters(M, beta)
     @unpack t = beta
     probs = zeros(length(t) + 1)
-
     return _irf!(M, probs, theta, pars, scoring_function = one)
 end
 
@@ -150,7 +146,6 @@ function _irf!(
     beta;
     scoring_function::F,
 ) where {F}
-    checkpars(M, beta)
     @unpack a, b, t = beta
     probs[1] = 0.0
     @. probs[2:end] = a * (theta - b + t)
@@ -200,6 +195,6 @@ function irf!(
     beta;
     scoring_function::F = one,
 ) where {F}
-    pars = merge_pars(M, beta)
+    pars = ItemParameters(M, beta)
     return _irf!(M, probs, theta, pars; scoring_function)
 end
