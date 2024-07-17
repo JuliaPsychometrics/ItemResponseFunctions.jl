@@ -9,6 +9,8 @@ using ItemResponseFunctions:
     check_pars,
     ItemParameters
 
+using ForwardDiff: Dual
+
 @testset "ItemResponseFunctions.jl" begin
     include("utils.jl")
     include("scoring_functions.jl")
