@@ -132,10 +132,10 @@ function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
     return irf(M, theta, beta)[y]
 end
 
-function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta)
+function irf(M::Type{<:PolytomousItemResponseModel}, theta::T, beta) where {T}
     pars = ItemParameters(M, beta)
     @unpack t = beta
-    probs = zeros(length(t) + 1)
+    probs = zeros(T, length(t) + 1)
     return _irf!(M, probs, theta, pars, scoring_function = one)
 end
 
@@ -147,7 +147,7 @@ function _irf!(
     scoring_function::F,
 ) where {F}
     @unpack a, b, t = beta
-    probs[1] = 0.0
+    probs[1] = zero(eltype(probs))
     @. probs[2:end] = a * (theta - b + t)
     cumsum!(probs, probs)
     softmax!(probs, probs)

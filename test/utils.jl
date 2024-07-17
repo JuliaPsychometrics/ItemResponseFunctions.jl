@@ -36,6 +36,10 @@
             FivePL,
             (; a = 1.0, c = 0.0, d = 1.0, e = -1.0),
         )
+    end
 
+    @testset "irf accepts dual numbers" begin
+        @test irf(OnePL, Dual(0.0), 0.0, 1) isa Real
+        @test irf(PCM, Dual(0.0), (; b = 0.0, t = 0.0), 1) isa Real
     end
 end
