@@ -56,6 +56,7 @@ include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
 include("derivatives.jl")
+include("likelihood.jl")
 
 include("precompile.jl")
 
