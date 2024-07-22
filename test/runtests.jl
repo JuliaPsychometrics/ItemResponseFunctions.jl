@@ -26,4 +26,5 @@ using ForwardDiff: Dual
     include("models/rating_scale_model.jl")
     include("models/generalized_rating_scale_model.jl")
     include("derivatives.jl")
+    include("likelihood.jl")
 end
