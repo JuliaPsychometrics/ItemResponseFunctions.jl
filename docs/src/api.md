@@ -33,20 +33,13 @@ expected_score
 information
 ```
 ### Utilities
-#### Scoring functions
-```@docs
-partial_credit
-```
-
-#### Derivatives
-```@docs
-derivative_theta
-derivative_theta!
-second_derivative_theta
-second_derivative_theta!
-```
-
-#### Item parameters
 ```@docs
 ItemParameters
+derivative_theta
+derivative_theta!
+likelihood
+loglikelihood
+partial_credit
+second_derivative_theta
+second_derivative_theta!
 ```

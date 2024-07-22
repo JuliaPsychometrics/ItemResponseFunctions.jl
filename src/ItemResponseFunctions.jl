@@ -45,7 +45,9 @@ export DichotomousItemResponseModel,
     derivative_theta,
     derivative_theta!,
     second_derivative_theta,
-    second_derivative_theta!
+    second_derivative_theta!,
+    likelihood,
+    loglikelihood
 
 include("model_types.jl")
 include("item_parameters.jl")
@@ -56,6 +58,7 @@ include("expected_score.jl")
 include("information.jl")
 include("scoring_functions.jl")
 include("derivatives.jl")
+include("likelihood.jl")
 
 include("precompile.jl")
 
