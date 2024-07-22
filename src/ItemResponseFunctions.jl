@@ -45,7 +45,9 @@ export DichotomousItemResponseModel,
     derivative_theta,
     derivative_theta!,
     second_derivative_theta,
-    second_derivative_theta!
+    second_derivative_theta!,
+    likelihood,
+    loglikelihood
 
 include("model_types.jl")
 include("item_parameters.jl")
