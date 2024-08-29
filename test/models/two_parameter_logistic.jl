@@ -36,4 +36,25 @@
         @test information(T, -Inf, betas) == 0.0
         @test information(T, 0.0, beta) == sum(iif(T, 0.0, beta, y) for y in 0:1)
     end
+
+    @testset "properties" begin
+        M = Data.Just(TwoPL)
+
+        @check irf_is_monotone(M, floatgen, itempargen, positivefloatgen)
+        @check irf_approaches_lower_asymptote(M, floatgen, itempargen)
+        @check irf_approaches_upper_asymptote(M, floatgen, itempargen)
+        @check irf_probabilities_sum_to_one(M, floatgen, itempargen)
+
+        @check iif_is_nonnegative(M, floatgen, itempargen)
+        @check iif_sums_to_total_information(M, floatgen, itempargen)
+        @check iif_maximum_at_b(M, floatgen, itempargen)
+
+        @check expected_score_is_monotone(M, floatgen, testgen, positivefloatgen)
+        @check expected_score_approaches_minimum_score(M, floatgen, testgen)
+        @check expected_score_approaches_maximum_score(M, floatgen, testgen)
+        @check expected_score_is_additive(M, floatgen, testgen)
+
+        @check information_is_additive(M, floatgen, testgen)
+        @check information_is_nonnegative(M, floatgen, testgen)
+    end
 end
