@@ -1,14 +1,11 @@
 module ItemResponseFunctions
 
 using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
-using DifferentiationInterface:
-    AutoForwardDiff, derivative!, value_and_derivative, second_derivative
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST, FIELDS
+using ForwardDiff: derivative, derivative!
 using LogExpFunctions: logistic, cumsum!, softmax!
 using Reexport: @reexport
 using SimpleUnPack: @unpack
-
-import ForwardDiff
 
 # AbstractItemResponseModels interface extensions
 @reexport import AbstractItemResponseModels:
