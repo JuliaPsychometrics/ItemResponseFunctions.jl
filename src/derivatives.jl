@@ -1,3 +1,7 @@
+function second_derivative(f, x)
+    return derivative(x -> derivative(f, x), x)
+end
+
 """
     $(SIGNATURES)
 
@@ -26,7 +30,7 @@ function _derivative_theta!(
     scoring_function::F,
 ) where {F}
     f = (y, x) -> _irf!(M, y, x, beta; scoring_function)
-    derivative!(f, probs, derivs, AutoForwardDiff(), theta)
+    derivative!(derivs, f, probs, theta)
     return probs, derivs
 end
 
@@ -119,7 +123,8 @@ function derivative_theta(
 ) where {F}
     pars = ItemParameters(M, beta)
     f = x -> irf(M, x, pars, y) * scoring_function(y)
-    prob, deriv = value_and_derivative(f, AutoForwardDiff(), theta)
+    prob = f(theta)
+    deriv = derivative(f, theta)
     return prob, deriv
 end
 
@@ -198,8 +203,8 @@ function _second_derivative_theta!(
     _derivative_theta!(M, probs, derivs, theta, beta; scoring_function)
     f0 = x -> irf(M, x, beta, 0) * scoring_function(0)
     f1 = x -> irf(M, x, beta, 1) * scoring_function(1)
-    derivs2[1] = second_derivative(f0, AutoForwardDiff(), theta)
-    derivs2[2] = second_derivative(f1, AutoForwardDiff(), theta)
+    derivs2[1] = second_derivative(f0, theta)
+    derivs2[2] = second_derivative(f1, theta)
     return probs, derivs, derivs2
 end
 
@@ -295,10 +300,10 @@ function second_derivative_theta(
     y;
     scoring_function::F = one,
 ) where {F}
-    adtype = AutoForwardDiff()
     f = x -> irf(M, x, beta, y) * scoring_function(y)
-    prob, deriv = value_and_derivative(f, adtype, theta)
-    deriv2 = second_derivative(f, adtype, theta)
+    prob = f(theta)
+    deriv = derivative(f, theta)
+    deriv2 = second_derivative(f, theta)
     return prob, deriv, deriv2
 end
 
