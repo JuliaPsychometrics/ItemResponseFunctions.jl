@@ -90,7 +90,7 @@ julia> irf(RSM, 0.0, beta, 3)
 
 """
 function irf(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    checkresponsetype(response_type(M), y)
+    check_response_type(M, y)
     pars = ItemParameters(M, beta)
     return _irf(M, theta, pars, y; scoring_function = one)
 end
@@ -128,7 +128,7 @@ end
 
 # polytomous models
 function irf(M::Type{<:PolytomousItemResponseModel}, theta, beta, y)
-    checkresponsetype(response_type(M), y)
+    check_response_type(M, y)
     return irf(M, theta, beta)[y]
 end
 

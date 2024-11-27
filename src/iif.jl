@@ -43,7 +43,7 @@ julia> iif(FourPL, 0.0, (a = 2.1, b = -0.2, c = 0.15, d = 0.9))
 
 """
 function iif(M::Type{<:DichotomousItemResponseModel}, theta, beta, y)
-    checkresponsetype(response_type(M), y)
+    check_response_type(M, y)
     return _iif(M, theta, beta, y; scoring_function = one)
 end
 
