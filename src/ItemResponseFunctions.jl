@@ -1,6 +1,6 @@
 module ItemResponseFunctions
 
-using AbstractItemResponseModels: Dichotomous, Nominal, checkresponsetype
+using AbstractItemResponseModels: Dichotomous, Nominal, check_response_type
 using DocStringExtensions: SIGNATURES, TYPEDEF, METHODLIST, FIELDS
 using ForwardDiff: derivative, derivative!
 using LogExpFunctions: logistic, cumsum!, softmax!
