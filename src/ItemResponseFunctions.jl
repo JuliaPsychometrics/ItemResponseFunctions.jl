@@ -11,7 +11,7 @@ using SimpleUnPack: @unpack
 @reexport import AbstractItemResponseModels:
     ItemResponseModel, irf, iif, expected_score, information
 
-import AbstractItemResponseModels: response_type
+import AbstractItemResponseModels: response_type, get_item_locations
 
 export DichotomousItemResponseModel,
     FivePL,

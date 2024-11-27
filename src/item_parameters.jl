@@ -153,3 +153,16 @@ function check_stiffness(M::Type{<:ItemResponseModel}, e)
     end
     return true
 end
+
+function get_item_locations(pars::ItemParameters{<:DichotomousItemResponseModel})
+    return pars.b
+end
+
+function get_item_locations(pars::ItemParameters{<:PolytomousItemResponseModel})
+    return pars.b .+ pars.t
+end
+
+# add a method with a model type to stay consistent with the interface definition
+function get_item_locations(M::Type{<:ItemResponseModel}, pars::ItemParameters)
+    return get_item_locations(pars)
+end
