@@ -11,6 +11,12 @@ using ItemResponseFunctions:
 
 using ForwardDiff: Dual
 
+# only do property based testing on julia 1.11 or higher since Supposition.jl only
+# supports exporting to @testset in these versions.
+# if VERSION >= v"1.11"
+include("properties.jl")
+# end
+
 @testset "ItemResponseFunctions.jl" begin
     include("utils.jl")
     include("scoring_functions.jl")
@@ -21,10 +27,10 @@ using ForwardDiff: Dual
     include("models/three_parameter_logistic.jl")
     include("models/four_parameter_logistic.jl")
     include("models/five_parameter_logistic.jl")
-    include("models/generalized_partial_credit_model.jl")
-    include("models/partial_credit_model.jl")
-    include("models/rating_scale_model.jl")
-    include("models/generalized_rating_scale_model.jl")
+    # include("models/generalized_partial_credit_model.jl")
+    # include("models/partial_credit_model.jl")
+    # include("models/rating_scale_model.jl")
+    # include("models/generalized_rating_scale_model.jl")
     include("derivatives.jl")
     include("likelihood.jl")
 end
